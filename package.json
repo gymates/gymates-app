@@ -36,6 +36,7 @@
     "@nx/playwright": "20.3.0",
     "@nx/web": "20.3.0",
     "@nx/workspace": "20.3.0",
+    "@nxrocks/nx-spring-boot": "^10.2.6",
     "@playwright/test": "^1.36.0",
     "@schematics/angular": "~19.0.0",
     "@swc-node/register": "~1.9.1",
