@@ -15,6 +15,7 @@
 10. [Notifications](./tasks/10-notifications.md)
 11. [Bug Report and Feedback](./tasks/11-bug-report-and-feedback.md)
 12. [Admin: User and Content Management](./tasks/12-admin-user-content-management.md)
+13. [CI/CD Pipeline Configuration](./tasks/13-cicd-pipeline-configuration.md)
 
 ---
 
