@@ -2,5 +2,13 @@
   "name": "backend",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/backend/src",
-  "tags": []
+  "tags": [],
+  "targets": {
+    "run": {
+      "executor": "@nxrocks/nx-spring-boot:run",
+      "options": {
+        "root": "apps/backend"
+      }
+    }
+  }
 }

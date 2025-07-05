@@ -1,0 +1,27 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+' System Context Diagram
+Person(user, "User", "Uses the Gymates application via browser or mobile device")
+System_Boundary(gymates, "Gymates Platform") {
+  Container(frontend, "Frontend (SPA)", "Angular", "User interface, communicates with backend via REST/WebSocket")
+  Container(backend, "Backend API", "Spring Boot", "Business logic, REST API, WebSocket, authorization, notifications")
+  ContainerDb(db, "Database", "PostgreSQL/MySQL", "Stores users, groups, trainings, diet data, etc.")
+  Container(email, "Email Service", "SMTP/Provider", "Sends activation, notification, and password reset emails")
+}
+System_Ext(email_provider, "Email Provider", "External service for sending emails")
+System_Ext(push_provider, "Push Notification Provider", "External service for push notifications")
+
+Rel(user, frontend, "Uses via browser/mobile")
+Rel(frontend, backend, "REST API / WebSocket")
+Rel(backend, db, "JPA/Hibernate")
+Rel(backend, email, "Sends emails")
+Rel(email, email_provider, "SMTP/API")
+Rel(backend, push_provider, "Sends push notifications")
+
+@enduml
+
+---
+
+The diagram above presents the system context and main containers of the Gymates application. You can generate it using https://plantuml.com/ or the PlantUML extension in VS Code.
