@@ -1,82 +1,111 @@
-# GymatesApp
+# Gymates App
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+A monorepo for the Gymates application, managed with Nx. Includes frontend (TypeScript), backend (Java/Spring), and documentation.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
+## Table of Contents
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [Development](#development)
+- [Testing](#testing)
+- [Code Quality](#code-quality)
+- [VSCode Recommendations](#vscode-recommendations)
+- [Scripts](#scripts)
+- [Contributing](#contributing)
+- [Documentation](#documentation)
 
-## Finish your CI setup
+---
 
-[Click here to finish setting up your workspace!](https://cloud.nx.app/connect/OXHj8CfawU)
+## Project Structure
 
+- `apps/frontend` – Frontend app (TypeScript, Nx)
+- `apps/backend` – Backend app (Java, Spring Boot)
+- `documentation/` – Business, technical docs, user stories, tasks
 
-## Run tasks
+## Getting Started
 
-To run the dev server for your app, use:
+1. **Clone the repository:**
+   ```sh
+   git clone <repo-url>
+   cd gymates-app
+   ```
+2. **Install dependencies:**
+   ```sh
+   npm install
+   ```
+3. **Set up backend:**
+   - Requires Java 17+ and Maven.
+   - See `apps/backend/HELP.md` for backend setup.
 
-```sh
-npx nx serve frontend
-```
+## Development
 
-To create a production bundle:
+- **Frontend:**
+  ```sh
+  nx serve frontend
+  ```
+- **Backend:**
+  ```sh
+  cd apps/backend
+  ./mvnw spring-boot:run
+  ```
+- **Lint:**
+  ```sh
+  nx lint frontend
+  # or for all
+  nx run-many --target=lint --all
+  ```
+- **Format:**
+  ```sh
+  npx prettier --write .
+  ```
 
-```sh
-npx nx build frontend
-```
+## Testing
 
-To see all available targets to run for a project, run:
+- **Frontend:**
+  ```sh
+  nx test frontend
+  ```
+- **Backend:**
+  ```sh
+  cd apps/backend
+  ./mvnw test
+  ```
 
-```sh
-npx nx show project frontend
-```
+## Code Quality
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+- **ESLint** and **Prettier** are configured for TypeScript code.
+- **Husky** runs lint and tests before commits.
+- **Jest** is used for frontend tests; backend uses JUnit.
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+## VSCode Recommendations
 
-## Add new projects
+- Install recommended extensions from `.vscode/extensions.json`:
+  - ESLint
+  - Prettier
+  - Java Extension Pack
+  - Nx Console
+- Workspace settings in `.vscode/settings.json`.
 
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
+## Scripts
 
-Use the plugin's generator to create new projects.
+- All scripts are available in `package.json` and Nx workspace.
+- Common scripts:
+  - `npm run lint`
+  - `npm run format`
+  - `npm test`
+  - `nx <command>`
 
-To generate a new application, use:
+## Contributing
 
-```sh
-npx nx g @nx/angular:app demo
-```
+- Follow the [workflow](./documentation/workflow.md) and [user stories](./documentation/user-stories.md).
+- Use feature branches: `feature/<number>-desc`.
+- Write clear, small commits and PRs.
+- Update documentation as needed.
 
-To generate a new library, use:
+## Documentation
 
-```sh
-npx nx g @nx/angular:lib mylib
-```
-
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
-
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+- See `documentation/` for:
+  - [Workflow](./documentation/workflow.md)
+  - [User Stories & Tasks](./documentation/user-stories.md)
+  - [Architecture](./documentation/project-architecture.md)
+  - [Business Requirements](./documentation/business-requirements.md)
