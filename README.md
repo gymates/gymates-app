@@ -1,6 +1,6 @@
 # Gymates App
 
-A monorepo for the Gymates application, managed with Nx. Includes frontend (TypeScript), backend (Java/Spring), and documentation.
+Gymates is a social and training app for gym-goers: friends and groups, chat, training and meal plans, progress tracking, and notifications. This repository is an Nx-managed monorepo that includes the frontend (Angular 19 + SSR), the backend (Spring Boot), and E2E tests (Playwright).
 
 ## Table of Contents
 
@@ -13,13 +13,15 @@ A monorepo for the Gymates application, managed with Nx. Includes frontend (Type
 - [Scripts](#scripts)
 - [Contributing](#contributing)
 - [Documentation](#documentation)
+- [Nx Cloud](#nx-cloud)
 
 ---
 
 ## Project Structure
 
-- `apps/frontend` – Frontend app (TypeScript, Nx)
-- `apps/backend` – Backend app (Java, Spring Boot)
+- `apps/frontend` – Frontend (Angular 19 + SSR)
+- `apps/backend` – Backend (Java, Spring Boot)
+- `apps/frontend-e2e` – E2E tests (Playwright)
 - `documentation/` – Business, technical docs, user stories, tasks
 
 ## Getting Started
@@ -34,8 +36,9 @@ A monorepo for the Gymates application, managed with Nx. Includes frontend (Type
    npm install
    ```
 3. **Set up backend:**
-   - Requires Java 17+ and Maven.
-   - See `apps/backend/HELP.md` for backend setup.
+
+- Requires Java 17+ and Maven.
+- See `apps/backend/HELP.md`.
 
 ## Development
 
@@ -45,8 +48,9 @@ A monorepo for the Gymates application, managed with Nx. Includes frontend (Type
   ```
 - **Backend:**
   ```sh
-  cd apps/backend
-  ./mvnw spring-boot:run
+  nx run backend:serve
+  # or
+  nx run backend:run
   ```
 - **Lint:**
   ```sh
@@ -56,7 +60,7 @@ A monorepo for the Gymates application, managed with Nx. Includes frontend (Type
   ```
 - **Format:**
   ```sh
-  npx prettier --write .
+  npm run format
   ```
 
 ## Testing
@@ -67,15 +71,21 @@ A monorepo for the Gymates application, managed with Nx. Includes frontend (Type
   ```
 - **Backend:**
   ```sh
-  cd apps/backend
-  ./mvnw test
+  nx run backend:test
   ```
 
 ## Code Quality
 
-- **ESLint** and **Prettier** are configured for TypeScript code.
+- **ESLint** (flat config) and **Prettier** are configured for TypeScript.
+  - Prettier v3 configured via `.prettierrc` (e.g., `singleQuote: true`).
+  - `.prettierignore` excludes build outputs, including Maven `target/`.
+  - ESLint integrates `eslint-config-prettier` to avoid style rule conflicts with Prettier.
 - **Husky** runs lint and tests before commits.
 - **Jest** is used for frontend tests; backend uses JUnit.
+- We enforce module boundaries via `@nx/enforce-module-boundaries` using project tags:
+  - `apps/frontend`: [type:app, scope:frontend]
+  - `apps/backend`: [type:app, scope:backend]
+  - `apps/frontend-e2e`: [type:e2e, scope:frontend]
 
 ## VSCode Recommendations
 
@@ -88,12 +98,23 @@ A monorepo for the Gymates application, managed with Nx. Includes frontend (Type
 
 ## Scripts
 
-- All scripts are available in `package.json` and Nx workspace.
-- Common scripts:
-  - `npm run lint`
-  - `npm run format`
-  - `npm test`
-  - `nx <command>`
+- Scripts from `package.json`:
+  - `npm run start:fe` — starts the frontend (`nx serve frontend`)
+  - `npm run build:fe` — builds the frontend (`nx build frontend`)
+  - `npm run test:fe` — runs frontend tests (`nx test frontend`)
+  - `npm run e2e` — runs e2e tests (`nx e2e frontend-e2e`)
+  - `npm run serve:be` — serves the backend (`nx run backend:serve`)
+  - `npm run run:be` — runs the backend (`nx run backend:run`)
+  - `npm run build:be` — builds the backend (`nx run backend:build`)
+  - `npm run test:be` — runs backend tests (`nx run backend:test`)
+  - `npm run clean:be` — cleans the backend (`nx run backend:clean`)
+  - `npm run format` — formats the repo with Prettier
+
+## Nx Cloud
+
+- CI uses Nx Cloud (runner `nx-cloud`). To enable remote cache, logs, and distributed execution, add a GitHub secret `NX_CLOUD_ACCESS_TOKEN` with a CI token generated in Nx Cloud (Project Settings → Access Tokens).
+- The workflow `.github/workflows/ci.yml` includes a Node/Java matrix and an optional distribution step (`npx nx-cloud start-ci-run`) that runs when the secret is present.
+- You can see logs and statuses (cache/executed) in Nx Cloud → Runs.
 
 ## Contributing
 

@@ -15,6 +15,11 @@ permissions:
 jobs:
   main:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [18, 20]
+        java: [17, 22]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -29,14 +34,21 @@ jobs:
       # Cache node_modules
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.node }}
           cache: 'npm'
 
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '22'
+          java-version: ${{ matrix.java }}
+
+      # Optional: Start Nx Cloud distributed agents (requires NX_CLOUD_ACCESS_TOKEN secret)
+      - name: Start Nx Cloud distributed CI run
+        if: ${{ secrets.NX_CLOUD_ACCESS_TOKEN != '' }}
+        run: npx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e"
+        env:
+          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
       - run: npm ci --legacy-peer-deps
       - run: npx playwright install --with-deps
@@ -46,4 +58,5 @@ jobs:
       # - run: npx nx-cloud record -- echo Hello World
       # Nx Affected runs only tasks affected by the changes in this PR/commit. Learn more: https://nx.dev/ci/features/affected
       # When you enable task distribution, run the e2e-ci task instead of e2e
-      - run: npx nx affected -t lint test build e2e
+      # Record logs to Nx Cloud if available
+      - run: npx nx-cloud record -- npx nx affected -t lint test build e2e
