@@ -65,14 +65,46 @@ Gymates is a social and training app for gym-goers: friends and groups, chat, tr
 
 ## Testing
 
-- **Frontend:**
+### Unit tests (Jest)
+
+- Frontend (Angular + jest-preset-angular, jsdom env):
   ```sh
   nx test frontend
   ```
-- **Backend:**
+- Watch mode (re-run on changes):
   ```sh
-  nx run backend:test
+  nx test frontend --watch
   ```
+- Coverage report:
+  ```sh
+  nx test frontend --coverage
+  # reports in coverage/apps/frontend
+  ```
+
+### E2E tests (Playwright)
+
+- Run e2e suite (starts dev server automatically if needed):
+  ```sh
+  nx e2e frontend-e2e
+  ```
+- Open Playwright UI (headed debug):
+  ```sh
+  npx playwright test --ui
+  ```
+
+### Backend tests (JUnit via Maven)
+
+```sh
+nx run backend:test
+```
+
+### Nx Affected (CI / local optimization)
+
+Run tests only for projects affected by the current branch:
+
+```sh
+npx nx affected -t test
+```
 
 ## Code Quality
 
@@ -80,7 +112,7 @@ Gymates is a social and training app for gym-goers: friends and groups, chat, tr
   - Prettier v3 configured via `.prettierrc` (e.g., `singleQuote: true`).
   - `.prettierignore` excludes build outputs, including Maven `target/`.
   - ESLint integrates `eslint-config-prettier` to avoid style rule conflicts with Prettier.
-- **Husky** runs lint and tests before commits.
+- **Husky** runs lint-staged (ESLint autofix + Prettier) before commits.
 - **Jest** is used for frontend tests; backend uses JUnit.
 - We enforce module boundaries via `@nx/enforce-module-boundaries` using project tags:
   - `apps/frontend`: [type:app, scope:frontend]
@@ -109,6 +141,11 @@ Gymates is a social and training app for gym-goers: friends and groups, chat, tr
   - `npm run test:be` — runs backend tests (`nx run backend:test`)
   - `npm run clean:be` — cleans the backend (`nx run backend:clean`)
   - `npm run format` — formats the repo with Prettier
+
+### Git Hooks (Husky)
+
+- Hooks are installed automatically on `npm install` via the `prepare` script.
+- Pre-commit runs `lint-staged` to lint and format only the staged files.
 
 ## Nx Cloud
 
