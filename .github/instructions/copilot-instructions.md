@@ -32,57 +32,11 @@ These instructions guide how code should be designed and written across this rep
 
 ## Architecture guidance
 
-- Clean Architecture layering
-  - Domain (enterprise rules): entities, value objects, domain services; no framework dependencies.
-  - Application (use cases): orchestrates domain; defines input/output ports and DTOs; no infrastructure details.
-  - Interface/Adapters (inbound): controllers, CLI, schedulers mapping requests to use cases/DTOs.
-  - Infrastructure (outbound): persistence, message brokers, email, third-party APIs implementing ports.
-  - Rule: inner layers must not depend on outer layers; dependencies point inward.
-- DDD essentials
-  - Ubiquitous Language: use domain terms consistently in code and tests.
-  - Bounded Contexts: split large domains; keep models context-specific.
-  - Aggregates with invariants and transactional boundaries; modify via aggregate roots.
-  - Domain Events for significant state changes; publish from domain and handle in application/integration layers.
-  - Repositories abstract aggregate persistence; return domain objects, not ORM types.
-- Hexagonal/Onion architecture
-  - Ports (interfaces) define required and provided capabilities at the application boundary.
-  - Adapters implement ports (e.g., database adapter, HTTP client adapter).
-  - Replaceable edges: allow swapping infra (DB, queues, providers) with minimal changes.
 - Cross-cutting concerns
   - Validation at boundaries, idempotency for commands, retries with backoff for transient errors, circuit breakers for remote calls.
   - Configuration via environment/secret store; no hardcoded credentials (see OWASP file).
 
-## Practical structure (Java/Spring Boot)
-
-- Suggested package layout by context (example):
-  - `io.github.gymates.<bc>.domain` — aggregates, value objects, domain services, events
-  - `io.github.gymates.<bc>.application` — use cases, commands/queries, ports (interfaces), DTOs
-  - `io.github.gymates.<bc>.infrastructure` — repositories, external clients, config
-  - `io.github.gymates.<bc>.interfaces` — REST controllers, mappers, request/response models
-- Controllers
-  - Map HTTP to use cases; keep thin; validate DTOs; never expose entities directly.
-  - Use request/response DTOs and mappers; sanitize and encode outputs to avoid XSS.
-- Persistence
-  - Use repositories behind interfaces (ports). Implementations can use JPA/JDBC/etc.
-  - No domain logic in JPA entities; enforce invariants in domain layer.
-- Transactions
-  - Demarcate at application service or use-case level (`@Transactional`), not in controllers.
-- Testing
-  - Unit-test domain and use cases without Spring context.
-  - Slice tests for adapters (e.g., `@DataJpaTest`); integration tests for wiring.
-- Configuration
-  - Externalize via `application.properties` + env overrides; use profiles; avoid `@Value` proliferation—prefer typed config properties.
-
-## Practical structure (Angular/Nx)
-
-- Use standalone components (Angular 16+) and feature modules only when they add value.
-- Organize libraries by domain and layer (e.g., `feature`, `ui`, `data-access`, `util`).
-- Smart vs. dumb components: container components orchestrate; presentational components are pure and input-driven.
-- State management: start simple with signals/inputs/outputs; introduce NgRx or alternatives when complexity requires.
-- Avoid shared mutable state; use services as facades for data-access.
-- HttpClient
-  - Strongly type requests/responses; centralize interceptors (auth, error handling, caching).
-  - Sanitize any HTML before binding if unavoidable; prefer property binding over `[innerHTML]`.
+##
 
 ## API and contracts
 
@@ -134,12 +88,6 @@ These instructions guide how code should be designed and written across this rep
 - Update README/ADR/docs on user-visible changes, new endpoints, or decisions.
 - Include a brief usage example for new public APIs.
 - DoD: implemented requirements, no critical/high security issues, tests added and green, docs updated, performance acceptable, feature flagged if risky.
-
-## When to choose which architecture
-
-- Start with Clean layering; introduce DDD/Hexagonal when domain/integration complexity justifies it.
-- Use Hexagonal/Ports & Adapters when you have multiple external systems or plan to swap infra.
-- Apply DDD patterns (Aggregates, BCs) when domain rules are complex and evolving.
 
 ## How Copilot should proceed on new tasks
 

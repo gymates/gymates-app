@@ -14,6 +14,24 @@ applyTo: '**/*.java, **/*.kt'
 
 ## Spring Boot Instructions
 
+### Backend Architecture (Clean, DDD, Hexagonal/Onion)
+
+- Layering (Clean Architecture)
+  - Domain: Entities, Value Objects, Domain Services, Domain Events (no framework dependencies).
+  - Application: Use cases orchestrating domain; input/output ports; DTOs; no infrastructure details.
+  - Interfaces (Inbound Adapters): REST controllers, schedulers, CLI mapping requests to use cases.
+  - Infrastructure (Outbound Adapters): Persistence, messaging, external APIs implementing ports.
+  - Rule: dependencies point inward; inner layers do not depend on outer layers.
+- DDD Essentials
+  - Ubiquitous Language within bounded contexts; keep models context-specific.
+  - Aggregates enforce invariants and transactional boundaries; modify via aggregate roots.
+  - Publish domain events for significant state changes and handle them in application/integration layers.
+  - Repositories abstract persistence and return domain objects (not ORM entities outside infra).
+- Hexagonal/Onion
+  - Define ports for required and provided capabilities at the boundary.
+  - Implement adapters (DB, HTTP clients, message brokers) behind those ports for replaceable edges.
+  - Prefer composition and configuration to swap infrastructure with minimal changes.
+
 ### Dependency Injection
 
 - Use constructor injection for all required dependencies.
@@ -38,6 +56,24 @@ applyTo: '**/*.java, **/*.kt'
 - Services should be stateless and testable.
 - Inject repositories via the constructor.
 - Service method signatures should use domain IDs or DTOs, not expose repository entities directly unless necessary.
+
+### CQRS (Command/Query Responsibility Segregation)
+
+- Applicability: CQRS is a backend concern. We separate write paths (Commands) from read paths (Queries).
+- Principles
+  - Commands change state; Queries never change state. Do not mix them in a single handler.
+  - Commands should be idempotent (use an idempotency key/correlation ID where appropriate).
+  - Clear transactional boundaries at handler/use-case level (`@Transactional` for Commands; Queries are read-only).
+  - Queries return projections/DTOs optimized for the UI. Do not expose domain entities directly.
+  - Emit domain events after successful Commands and project them into read models (eventual consistency). Consider the Outbox pattern.
+  - Apply access control on both sides (least privilege, deny-by-default per OWASP).
+- Package organization (example):
+  - `...application.command` (DTO + handler)
+  - `...application.query` (DTO + handler)
+  - `...interfaces` (separate controllers for Commands and Queries)
+- Testing
+  - Commands: test invariants, idempotency, emitted events, and transactional effects.
+  - Queries: test projections (correctness, pagination/filters) and query performance.
 
 ### Logging
 
