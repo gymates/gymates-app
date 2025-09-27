@@ -45,7 +45,7 @@ jobs:
 
       # Optional: Start Nx Cloud distributed agents (requires NX_CLOUD_ACCESS_TOKEN secret)
       - name: Start Nx Cloud distributed CI run
-        if: ${{ secrets.NX_CLOUD_ACCESS_TOKEN != '' }}
+        if: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
         run: npx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e"
         env:
           NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
