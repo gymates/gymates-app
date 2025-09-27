@@ -1,0 +1,53 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "FE: nx serve frontend",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "start:fe"],
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "BE: Spring Boot (dev)",
+      "type": "shell",
+      "options": { "cwd": "${workspaceFolder}/apps/backend" },
+      "command": "./mvnw",
+      "args": ["spring-boot:run"],
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "BE: Spring Boot (debug 5005)",
+      "type": "shell",
+      "options": { "cwd": "${workspaceFolder}/apps/backend" },
+      "command": "./mvnw",
+      "args": [
+        "spring-boot:run",
+        "-Dspring-boot.run.jvmArguments=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+      ],
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "FE+BE: start both",
+      "dependsOn": ["FE: nx serve frontend", "BE: Spring Boot (dev)"],
+      "problemMatcher": []
+    },
+    {
+      "label": "FE: test",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "test:fe"],
+      "problemMatcher": []
+    },
+    {
+      "label": "E2E: frontend",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "e2e"],
+      "problemMatcher": []
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Frontend: Debug Chrome",
+      "type": "pwa-chrome",
+      "request": "launch",
+      "url": "http://localhost:4200",
+      "webRoot": "${workspaceFolder}",
+      "preLaunchTask": "FE: nx serve frontend"
+    },
+    {
+      "name": "Backend: Attach 5005",
+      "type": "java",
+      "request": "attach",
+      "hostName": "localhost",
+      "port": 5005,
+      "preLaunchTask": "BE: Spring Boot (debug 5005)"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Full Stack: FE + BE (debug)",
+      "configurations": ["Frontend: Debug Chrome", "Backend: Attach 5005"],
+      "preLaunchTask": "FE+BE: start both"
+    }
+  ]
+}

@@ -1,3 +1,31 @@
 {
-  "java.configuration.updateBuildConfiguration": "interactive"
+  "java.configuration.updateBuildConfiguration": "interactive",
+
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+
+  "eslint.useFlatConfig": true,
+  "eslint.validate": ["typescript", "html", "scss", "json", "jsonc"],
+  "prettier.requireConfig": true,
+
+  "typescript.tsdk": "node_modules/typescript/lib",
+
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "apps/**/dist/**": true,
+    "apps/**/target/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "apps/**/dist": true,
+    "apps/**/target": true
+  },
+
+  "debug.javascript.codelens.npmScripts": "all",
+  "files.eol": "\n",
+  "editor.tabSize": 2
 }
