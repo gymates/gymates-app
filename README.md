@@ -136,6 +136,7 @@ npx nx affected -t test
   - `npm run test:fe` — runs frontend tests (`nx test frontend`)
   - `npm run e2e` — runs e2e tests (`nx e2e frontend-e2e`)
   - `npm run serve:be` — serves the backend (`nx run backend:serve`)
+  - `npm run debug:be` — serves the backend in debug mode (`nx run backend:serve-debug`)
   - `npm run run:be` — runs the backend (`nx run backend:run`)
   - `npm run build:be` — builds the backend (`nx run backend:build`)
   - `npm run test:be` — runs backend tests (`nx run backend:test`)
