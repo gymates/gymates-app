@@ -10,29 +10,24 @@
       "problemMatcher": []
     },
     {
-      "label": "BE: Spring Boot (dev)",
+      "label": "BE: nx serve backend",
       "type": "shell",
-      "options": { "cwd": "${workspaceFolder}/apps/backend" },
-      "command": "./mvnw",
-      "args": ["spring-boot:run"],
+      "command": "npm",
+      "args": ["run", "serve:be"],
       "isBackground": true,
       "problemMatcher": []
     },
     {
-      "label": "BE: Spring Boot (debug 5005)",
+      "label": "BE: nx serve backend (debug 5005)",
       "type": "shell",
-      "options": { "cwd": "${workspaceFolder}/apps/backend" },
-      "command": "./mvnw",
-      "args": [
-        "spring-boot:run",
-        "-Dspring-boot.run.jvmArguments=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
-      ],
+      "command": "npm",
+      "args": ["run", "debug:be"],
       "isBackground": true,
       "problemMatcher": []
     },
     {
       "label": "FE+BE: start both",
-      "dependsOn": ["FE: nx serve frontend", "BE: Spring Boot (dev)"],
+      "dependsOn": ["FE: nx serve frontend", "BE: nx serve backend"],
       "problemMatcher": []
     },
     {
@@ -48,6 +43,15 @@
       "command": "npm",
       "args": ["run", "e2e"],
       "problemMatcher": []
+    },
+    {
+      "label": "FE+BE: start both (debug)",
+      "dependsOn": [
+        "FE: nx serve frontend",
+        "BE: nx serve backend (debug 5005)"
+      ],
+      "problemMatcher": [],
+      "dependsOrder": "parallel"
     }
   ]
 }

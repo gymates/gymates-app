@@ -39,6 +39,15 @@
       "options": {
         "root": "apps/backend"
       }
+    },
+    "serve-debug": {
+      "executor": "@nxrocks/nx-spring-boot:serve",
+      "options": {
+        "root": "apps/backend",
+        "args": [
+          "-Dspring-boot.run.jvmArguments=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+        ]
+      }
     }
   }
 }

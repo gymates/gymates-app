@@ -15,14 +15,13 @@
       "request": "attach",
       "hostName": "localhost",
       "port": 5005,
-      "preLaunchTask": "BE: Spring Boot (debug 5005)"
+      "preLaunchTask": "BE: nx serve backend (debug 5005)"
     }
   ],
   "compounds": [
     {
       "name": "Full Stack: FE + BE (debug)",
-      "configurations": ["Frontend: Debug Chrome", "Backend: Attach 5005"],
-      "preLaunchTask": "FE+BE: start both"
+      "configurations": ["Frontend: Debug Chrome", "Backend: Attach 5005"]
     }
   ]
 }

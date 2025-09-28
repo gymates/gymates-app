@@ -8,6 +8,7 @@
     "test:fe": "nx test frontend",
     "e2e": "nx e2e frontend-e2e",
     "serve:be": "nx run backend:serve",
+    "debug:be": "nx run backend:serve-debug",
     "run:be": "nx run backend:run",
     "build:be": "nx run backend:build",
     "test:be": "nx run backend:test",
