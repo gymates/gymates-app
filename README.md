@@ -167,4 +167,5 @@ npx nx affected -t test
   - [Workflow](./documentation/workflow.md)
   - [User Stories & Tasks](./documentation/user-stories.md)
   - [Architecture](./documentation/project-architecture.md)
+  - [Backend Architecture Guide](./documentation/backend-architecture.md)
   - [Business Requirements](./documentation/business-requirements.md)
