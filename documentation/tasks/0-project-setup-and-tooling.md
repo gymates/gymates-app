@@ -1,6 +1,6 @@
 ### User Story
 
-As a developer, I want the project to be properly configured with essential tools, linters, formatters, and testing frameworks so that development is consistent, maintainable, and efficient.
+As a developer, I want the project to be properly configured with essential tools, linters, formatters, testing frameworks, and Copilot instructions so that development is consistent, maintainable, and efficient.
 
 ### Details
 
@@ -12,6 +12,14 @@ As a developer, I want the project to be properly configured with essential tool
 - Add recommended VSCode settings and extensions.
 - Ensure all scripts are available in `package.json`.
 - Document setup in `README.md`.
+- **Add Copilot instructions:**
+  - Global best practices for code quality, modularity, and documentation.
+  - Frontend-specific guidelines (Angular, TypeScript, UI/UX, accessibility).
+  - Backend-specific guidelines (Java, Spring Boot, REST API, security).
+  - Prompts for writing clear commit messages.
+  - Prompts for writing and maintaining tests.
+  - Prompts for refactoring and code reviews.
+  - Example prompts for Copilot usage in this project.
 
 ### Acceptance Criteria
 
@@ -22,6 +30,7 @@ As a developer, I want the project to be properly configured with essential tool
 - [ ] Husky pre-commit hooks run lint and tests
 - [ ] VSCode settings/extensions are recommended in documentation
 - [ ] All setup steps are documented in `README.md`
+- [ ] Copilot instructions are available in the repository
 
 ### Related technical tasks
 
@@ -32,3 +41,8 @@ As a developer, I want the project to be properly configured with essential tool
 - [ ] Add Husky and configure pre-commit hooks
 - [ ] Update `README.md` with setup instructions
 - [ ] Add `.vscode` recommendations
+- [ ] Create and maintain `copilot-instructions.md` with:
+  - Global best practices
+  - Frontend and backend guidelines
+  - Prompts for commits, tests, refactoring, and code reviews
+  - Example Copilot prompts for this project

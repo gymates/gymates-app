@@ -1,82 +1,171 @@
-# GymatesApp
+# Gymates App
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+Gymates is a social and training app for gym-goers: friends and groups, chat, training and meal plans, progress tracking, and notifications. This repository is an Nx-managed monorepo that includes the frontend (Angular 19 + SSR), the backend (Spring Boot), and E2E tests (Playwright).
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
+## Table of Contents
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [Development](#development)
+- [Testing](#testing)
+- [Code Quality](#code-quality)
+- [VSCode Recommendations](#vscode-recommendations)
+- [Scripts](#scripts)
+- [Contributing](#contributing)
+- [Documentation](#documentation)
+- [Nx Cloud](#nx-cloud)
 
-## Finish your CI setup
+---
 
-[Click here to finish setting up your workspace!](https://cloud.nx.app/connect/OXHj8CfawU)
+## Project Structure
 
+- `apps/frontend` – Frontend (Angular 19 + SSR)
+- `apps/backend` – Backend (Java, Spring Boot)
+- `apps/frontend-e2e` – E2E tests (Playwright)
+- `documentation/` – Business, technical docs, user stories, tasks
 
-## Run tasks
+## Getting Started
 
-To run the dev server for your app, use:
+1. **Clone the repository:**
+   ```sh
+   git clone <repo-url>
+   cd gymates-app
+   ```
+2. **Install dependencies:**
+   ```sh
+   npm install
+   ```
+3. **Set up backend:**
+
+- Requires Java 17+ and Maven.
+- See `apps/backend/HELP.md`.
+
+## Development
+
+- **Frontend:**
+  ```sh
+  nx serve frontend
+  ```
+- **Backend:**
+  ```sh
+  nx run backend:serve
+  # or
+  nx run backend:run
+  ```
+- **Lint:**
+  ```sh
+  nx lint frontend
+  # or for all
+  nx run-many --target=lint --all
+  ```
+- **Format:**
+  ```sh
+  npm run format
+  ```
+
+## Testing
+
+### Unit tests (Jest)
+
+- Frontend (Angular + jest-preset-angular, jsdom env):
+  ```sh
+  nx test frontend
+  ```
+- Watch mode (re-run on changes):
+  ```sh
+  nx test frontend --watch
+  ```
+- Coverage report:
+  ```sh
+  nx test frontend --coverage
+  # reports in coverage/apps/frontend
+  ```
+
+### E2E tests (Playwright)
+
+- Run e2e suite (starts dev server automatically if needed):
+  ```sh
+  nx e2e frontend-e2e
+  ```
+- Open Playwright UI (headed debug):
+  ```sh
+  npx playwright test --ui
+  ```
+
+### Backend tests (JUnit via Maven)
 
 ```sh
-npx nx serve frontend
+nx run backend:test
 ```
 
-To create a production bundle:
+### Nx Affected (CI / local optimization)
+
+Run tests only for projects affected by the current branch:
 
 ```sh
-npx nx build frontend
+npx nx affected -t test
 ```
 
-To see all available targets to run for a project, run:
+## Code Quality
 
-```sh
-npx nx show project frontend
-```
+- **ESLint** (flat config) and **Prettier** are configured for TypeScript.
+  - Prettier v3 configured via `.prettierrc` (e.g., `singleQuote: true`).
+  - `.prettierignore` excludes build outputs, including Maven `target/`.
+  - ESLint integrates `eslint-config-prettier` to avoid style rule conflicts with Prettier.
+- **Husky** runs lint-staged (ESLint autofix + Prettier) before commits.
+- **Jest** is used for frontend tests; backend uses JUnit.
+- We enforce module boundaries via `@nx/enforce-module-boundaries` using project tags:
+  - `apps/frontend`: [type:app, scope:frontend]
+  - `apps/backend`: [type:app, scope:backend]
+  - `apps/frontend-e2e`: [type:e2e, scope:frontend]
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+## VSCode Recommendations
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+- Install recommended extensions from `.vscode/extensions.json`:
+  - ESLint
+  - Prettier
+  - Java Extension Pack
+  - Nx Console
+- Workspace settings in `.vscode/settings.json`.
 
-## Add new projects
+## Scripts
 
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
+- Scripts from `package.json`:
+  - `npm run start:fe` — starts the frontend (`nx serve frontend`)
+  - `npm run build:fe` — builds the frontend (`nx build frontend`)
+  - `npm run test:fe` — runs frontend tests (`nx test frontend`)
+  - `npm run e2e` — runs e2e tests (`nx e2e frontend-e2e`)
+  - `npm run serve:be` — serves the backend (`nx run backend:serve`)
+  - `npm run debug:be` — serves the backend in debug mode (`nx run backend:serve-debug`)
+  - `npm run run:be` — runs the backend (`nx run backend:run`)
+  - `npm run build:be` — builds the backend (`nx run backend:build`)
+  - `npm run test:be` — runs backend tests (`nx run backend:test`)
+  - `npm run clean:be` — cleans the backend (`nx run backend:clean`)
+  - `npm run format` — formats the repo with Prettier
 
-Use the plugin's generator to create new projects.
+### Git Hooks (Husky)
 
-To generate a new application, use:
+- Hooks are installed automatically on `npm install` via the `prepare` script.
+- Pre-commit runs `lint-staged` to lint and format only the staged files.
 
-```sh
-npx nx g @nx/angular:app demo
-```
+## Nx Cloud
 
-To generate a new library, use:
+- CI uses Nx Cloud (runner `nx-cloud`). To enable remote cache, logs, and distributed execution, add a GitHub secret `NX_CLOUD_ACCESS_TOKEN` with a CI token generated in Nx Cloud (Project Settings → Access Tokens).
+- The workflow `.github/workflows/ci.yml` includes a Node/Java matrix and an optional distribution step (`npx nx-cloud start-ci-run`) that runs when the secret is present.
+- You can see logs and statuses (cache/executed) in Nx Cloud → Runs.
 
-```sh
-npx nx g @nx/angular:lib mylib
-```
+## Contributing
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+- Follow the [workflow](./documentation/workflow.md) and [user stories](./documentation/user-stories.md).
+- Use feature branches: `feature/<number>-desc`.
+- Write clear, small commits and PRs.
+- Update documentation as needed.
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+## Documentation
 
-
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+- See `documentation/` for:
+  - [Workflow](./documentation/workflow.md)
+  - [User Stories & Tasks](./documentation/user-stories.md)
+  - [Architecture](./documentation/project-architecture.md)
+  - [Backend Architecture Guide](./documentation/backend-architecture.md)
+  - [Business Requirements](./documentation/business-requirements.md)

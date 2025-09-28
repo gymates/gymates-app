@@ -4,3 +4,7 @@
 /.nx/cache
 /.nx/workspace-data
 .angular
+
+# Maven/Java build outputs
+apps/backend/target
+**/target

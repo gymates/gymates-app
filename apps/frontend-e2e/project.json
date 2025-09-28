@@ -4,6 +4,14 @@
   "projectType": "application",
   "sourceRoot": "apps/frontend-e2e/src",
   "implicitDependencies": ["frontend"],
+  "tags": ["type:e2e", "scope:frontend"],
   "// targets": "to see all targets run: nx show project frontend-e2e --web",
-  "targets": {}
+  "targets": {
+    "e2e": {
+      "executor": "@nx/playwright:playwright",
+      "options": {
+        "config": "apps/frontend-e2e/playwright.config.ts"
+      }
+    }
+  }
 }

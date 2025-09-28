@@ -1,9 +1,17 @@
 {
   "recommendations": [
     "nrwl.angular-console",
+    "Angular.ng-template",
     "esbenp.prettier-vscode",
     "dbaeumer.vscode-eslint",
     "firsttris.vscode-jest-runner",
-    "ms-playwright.playwright"
-  ]
+    "ms-playwright.playwright",
+    "SonarSource.sonarlint-vscode",
+    "eamodio.gitlens",
+    "EditorConfig.EditorConfig",
+    "vscjava.vscode-java-pack",
+    "vmware.vscode-boot-dev-pack",
+    "vscjava.vscode-maven"
+  ],
+  "unwantedRecommendations": []
 }
