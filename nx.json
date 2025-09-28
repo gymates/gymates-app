@@ -84,10 +84,8 @@
   ],
   "tasksRunnerOptions": {
     "default": {
-      "runner": "nx-cloud",
-      "options": {
-        "accessToken": "${NX_CLOUD_ACCESS_TOKEN}"
-      }
+      "runner": "nx/tasks-runners/default",
+      "options": {}
     }
   },
   "generators": {
