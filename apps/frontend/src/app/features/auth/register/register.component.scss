@@ -1,0 +1,58 @@
+.registration-form {
+  max-width: 420px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.registration-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+input[type='email'],
+input[type='password'] {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+}
+
+button[type='submit'] {
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  background: #111827;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error {
+  color: #b91c1c;
+  font-size: 0.9rem;
+}
+.status.success {
+  color: #065f46;
+  margin-top: 1rem;
+}
+.status.error {
+  color: #b91c1c;
+  margin-top: 1rem;
+}
+.hint {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}

@@ -1,0 +1,11 @@
+type: object
+required: [userId, email, requiresEmailVerification]
+properties:
+  userId:
+    type: string
+    format: uuid
+  email:
+    type: string
+    format: email
+  requiresEmailVerification:
+    type: boolean

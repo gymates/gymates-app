@@ -1,0 +1,16 @@
+.navbar {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+}
+
+.navbar a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.navbar .navbar-brand {
+  opacity: 0.6;
+  margin-left: 1rem;
+}
