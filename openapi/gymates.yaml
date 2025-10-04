@@ -1,0 +1,17 @@
+openapi: 3.0.3
+info:
+  title: Gymates API
+  version: 0.1.0
+servers:
+  - url: https://api.example.com
+paths:
+  /api/auth/register:
+    $ref: './paths/auth/register.yaml'
+components:
+  schemas:
+    RegisterRequest:
+      $ref: './components/schemas/auth/RegisterRequest.yaml'
+    RegisterResponse:
+      $ref: './components/schemas/auth/RegisterResponse.yaml'
+    ErrorResponse:
+      $ref: './components/schemas/common/ErrorResponse.yaml'

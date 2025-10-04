@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en-US" datatype="plaintext" original="ng2.template" target-language="pl">
+    <body>
+      <trans-unit id="nav.register">
+        <source>Register</source>
+        <target>Zarejestruj się</target>
+      </trans-unit>
+      <trans-unit id="nav.brand">
+        <source>Gymates</source>
+        <target>Gymates</target>
+      </trans-unit>
+
+      <trans-unit id="register.title">
+        <source>Create your account</source>
+        <target>Utwórz konto</target>
+      </trans-unit>
+      <trans-unit id="register.email.label">
+        <source>Email</source>
+        <target>Email</target>
+      </trans-unit>
+      <trans-unit id="register.email.required">
+        <source>Email is required.</source>
+        <target>Email jest wymagany.</target>
+      </trans-unit>
+      <trans-unit id="register.email.invalid">
+        <source>Enter a valid email.</source>
+        <target>Podaj poprawny adres email.</target>
+      </trans-unit>
+      <trans-unit id="register.password.label">
+        <source>Password</source>
+        <target>Hasło</target>
+      </trans-unit>
+      <trans-unit id="register.password.required">
+        <source>Password is required.</source>
+        <target>Hasło jest wymagane.</target>
+      </trans-unit>
+      <trans-unit id="register.password.minlength">
+        <source>Password must be at least 8 characters.</source>
+        <target>Hasło musi mieć co najmniej 8 znaków.</target>
+      </trans-unit>
+      <trans-unit id="register.confirmPassword.label">
+        <source>Confirm Password</source>
+        <target>Potwierdź hasło</target>
+      </trans-unit>
+      <trans-unit id="register.confirmPassword.required">
+        <source>Confirmation is required.</source>
+        <target>Potwierdzenie jest wymagane.</target>
+      </trans-unit>
+      <trans-unit id="register.confirmPassword.mismatch">
+        <source>Passwords do not match.</source>
+        <target>Hasła nie są takie same.</target>
+      </trans-unit>
+      <trans-unit id="register.submit">
+        <source>Register</source>
+        <target>Zarejestruj</target>
+      </trans-unit>
+      <trans-unit id="register.submitting">
+        <source>Registering…</source>
+        <target>Rejestrowanie…</target>
+      </trans-unit>
+      <trans-unit id="register.success">
+        <source>Registration successful!</source>
+        <target>Rejestracja zakończona powodzeniem!</target>
+      </trans-unit>
+      <trans-unit id="register.error">
+        <source>Registration failed. Please try again.</source>
+        <target>Rejestracja nie powiodła się. Spróbuj ponownie.</target>
+      </trans-unit>
+      <trans-unit id="register.already">
+        <source>Already have an account?</source>
+        <target>Masz już konto?</target>
+      </trans-unit>
+      <trans-unit id="register.login">
+        <source>Log in</source>
+        <target>Zaloguj się</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
