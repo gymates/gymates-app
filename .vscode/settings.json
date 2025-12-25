@@ -27,5 +27,6 @@
 
   "debug.javascript.codelens.npmScripts": "all",
   "files.eol": "\n",
-  "editor.tabSize": 2
+  "editor.tabSize": 2,
+  "java.compile.nullAnalysis.mode": "automatic"
 }

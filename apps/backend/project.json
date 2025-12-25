@@ -31,13 +31,15 @@
     "run": {
       "executor": "@nxrocks/nx-spring-boot:run",
       "options": {
-        "root": "apps/backend"
+        "root": "apps/backend",
+        "args": ["-pl", "monolith", "-am"]
       }
     },
     "serve": {
       "executor": "@nxrocks/nx-spring-boot:serve",
       "options": {
-        "root": "apps/backend"
+        "root": "apps/backend",
+        "args": ["-pl", "monolith", "-am"]
       }
     },
     "serve-debug": {
@@ -45,6 +47,9 @@
       "options": {
         "root": "apps/backend",
         "args": [
+          "-pl",
+          "monolith",
+          "-am",
           "-Dspring-boot.run.jvmArguments=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
         ]
       }

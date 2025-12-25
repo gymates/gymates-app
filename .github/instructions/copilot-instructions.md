@@ -36,7 +36,39 @@ These instructions guide how code should be designed and written across this rep
   - Validation at boundaries, idempotency for commands, retries with backoff for transient errors, circuit breakers for remote calls.
   - Configuration via environment/secret store; no hardcoded credentials (see OWASP file).
 
-##
+## Backend architecture conventions (Spring Boot)
+
+- Follow Clean Architecture with Hexagonal/Onion principles and DDD. Default folder/package layout under `io.github.gymates`:
+  - `infrastructure/`
+    - `inbound/web/<feature>`: REST controllers and API DTOs; keep controllers thin; map errors via `@ControllerAdvice`.
+    - `inbound/mobile/<feature>`: mobile-specific controllers if needed.
+    - `outbound/persistence/jpa/<feature>`: JPA entities/repositories and adapters implementing outbound ports.
+    - `outbound/client/<feature>`: HTTP/messaging clients implementing outbound ports.
+    - `config`: infra configs (DB, security filters, serialization, Flyway).
+  - `application/<feature>`: CQRS handlers and ports.
+    - `command|query`: input models for use cases.
+    - `handler`: command/query handlers; annotate transactional boundaries here.
+    - `port/out`: outbound ports (interfaces) required by handlers.
+  - `domain/<feature>`: entities, value objects, services, events (framework-agnostic).
+
+- Contracts and mapping
+  - API DTOs live in inbound packages; do not expose JPA/domain types.
+  - Map explicitly between layers (manual or MapStruct).
+  - Version public APIs (e.g., `/api/v1/...`).
+
+- CQRS
+  - Separate commands (writes) and queries (reads) at application layer.
+  - Keep handlers small and cohesive; return minimal results.
+
+- Ports & Adapters
+  - Define outbound ports in application; implement them in infrastructure.
+  - Prefer constructor injection and interfaces for testability.
+
+- Testing
+  - Domain unit tests (pure, fast).
+  - Application tests with in-memory fakes for ports.
+  - Spring slices: `@WebMvcTest` for controllers, `@DataJpaTest` for persistence adapters.
+  - Integration tests for thin happy-path wiring (Testcontainers for DB preferred).
 
 ## API and contracts
 

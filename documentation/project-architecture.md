@@ -24,11 +24,15 @@ The Gymates application is designed as a modern, modular, and scalable web platf
 ## Backend Architecture
 
 - **Framework**: Spring Boot (Java)
-- **Structure**: Layered architecture (Controller, Service, Repository)
-- **API**: RESTful endpoints, with JWT-based authentication
+- **Structure**: Clean Architecture with Ports & Adapters (Hexagonal/Onion) and DDD
+  - `infrastructure/inbound`: web/mobile controllers, API DTOs, exception mapping
+  - `infrastructure/outbound`: persistence (JPA), external clients (HTTP, messaging)
+  - `application`: command/query handlers (CQRS), ports (interfaces), orchestration, transactions
+  - `domain`: entities, value objects, domain services, domain events
+- **API**: RESTful endpoints (versioned), JWT-based authentication
 - **Real-Time**: WebSocket endpoints for chat and notifications
-- **Persistence**: JPA/Hibernate for ORM, connecting to a relational database
-- **Testing**: JUnit for unit/integration tests
+- **Persistence**: JPA/Hibernate; adapters implement application ports; migrations via Flyway/Liquibase
+- **Testing**: Unit tests for domain, application handler tests with fakes, Spring slice tests for adapters, integration tests for happy-path wiring
 
 ## Key Architectural Features
 
