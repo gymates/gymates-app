@@ -1,9 +1,8 @@
 package io.github.gymates.adapter.out.jwt;
 
-import io.github.gymates.adapter.in.security.DomainUserDetails;
+import io.github.gymates.security.DomainUserDetails;
 import io.github.gymates.user.model.User;
 import io.github.gymates.auth.login.TokenService;
-import io.github.gymates.user.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

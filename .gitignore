@@ -16,6 +16,7 @@ node_modules
 *.launch
 .settings/
 *.sublime-workspace
+**/.idea
 
 # IDE - VSCode
 .vscode/*
@@ -42,3 +43,5 @@ Thumbs.db
 .nx/workspace-data
 
 .angular
+.env
+.env.*

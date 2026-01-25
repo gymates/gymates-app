@@ -1,4 +1,4 @@
-package io.github.gymates.adapter.in.security;
+package io.github.gymates.security;
 
 import io.github.gymates.user.model.User;
 import lombok.AllArgsConstructor;

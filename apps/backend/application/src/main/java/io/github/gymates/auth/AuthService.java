@@ -7,12 +7,13 @@ import io.github.gymates.auth.login.TokenData;
 import io.github.gymates.auth.register.RegisterUserCommand;
 import io.github.gymates.auth.register.RegisterUserUseCase;
 import io.github.gymates.user.model.User;
-import io.github.gymates.auth.login.AuthenticationService;
 import io.github.gymates.auth.email.EmailService;
 import io.github.gymates.auth.login.TokenService;
 import io.github.gymates.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -30,7 +31,7 @@ public class AuthService implements RegisterUserUseCase,
 {
   private final UserRepository userRepository;
   private final EmailService emailService;
-  private final AuthenticationService authenticationServicePort;
+  private final AuthenticationManager authenticationManager;
   private final TokenService tokenService;
 
   @Override
@@ -42,7 +43,7 @@ public class AuthService implements RegisterUserUseCase,
       throw new RuntimeException("Account not verified. Please verify your");
     }
 
-    authenticationServicePort.authenticate(command.email(), command.password());
+    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(command.email(), command.password()));
 
     String token = tokenService.generateToken(user);
 
@@ -125,7 +126,11 @@ public class AuthService implements RegisterUserUseCase,
         user.setVerificationCode(null);
         user.setExpirationDate(null);
         userRepository.save(user);
+      } else {
+        throw new RuntimeException("Codes do not match");
       }
+    } else {
+      throw new RuntimeException("User does not exist");
     }
   }
 

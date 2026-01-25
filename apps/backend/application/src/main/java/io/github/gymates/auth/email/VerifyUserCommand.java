@@ -1,7 +1,7 @@
 package io.github.gymates.auth.email;
 
-import io.github.gymates.user.model.User;
+import io.github.gymates.user.model.VerificationUser;
 
-public record VerifyUserCommand(User user) {
+public record VerifyUserCommand(VerificationUser user) {
 
 }
