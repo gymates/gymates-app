@@ -11,6 +11,6 @@ export class AuthService {
   private http = inject(HttpClient);
 
   register(payload: RegisterRequest): Observable<RegisterResponse> {
-    return this.http.post<RegisterResponse>('/api/auth/register', payload);
+    return this.http.post<RegisterResponse>('auth/register', payload);
   }
 }

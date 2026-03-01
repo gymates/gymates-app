@@ -1,0 +1,36 @@
+:host ::ng-deep {
+  display: grid;
+  height: 100%;
+  place-content: center;
+
+  mat-card {
+    max-width: 420px;
+
+    mat-card-header {
+      .mat-mdc-card-header-text {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 28px;
+      }
+
+      mat-card-title {
+        font-size: 1.5rem;
+        line-height: 2rem;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+      }
+    }
+
+    mat-card-content {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+  }
+
+  .mat-card-title,
+  .mat-card-subtitle {
+    width: 100%;
+    text-align: center;
+  }
+}

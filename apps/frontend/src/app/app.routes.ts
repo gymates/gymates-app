@@ -1,8 +1,9 @@
 import { Route } from '@angular/router';
-import { RegisterComponent } from './features/auth/register/register.component';
+import { LoginComponent } from './features/auth/login/login-page.component';
+import { RegisterComponent } from './features/auth/register/register-page.component';
 
 export const appRoutes: Route[] = [
-  { path: '', redirectTo: 'register', pathMatch: 'full' },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  // Future: { path: 'login', loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent) }
 ];

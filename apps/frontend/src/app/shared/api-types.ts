@@ -29,6 +29,9 @@ export interface components {
       /** Format: email */
       email: string;
       password: string;
+      username: string;
+      firstName: string;
+      lastName: string;
     };
     RegisterResponse: {
       /** Format: uuid */

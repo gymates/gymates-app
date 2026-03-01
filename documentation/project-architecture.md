@@ -10,7 +10,7 @@ The Gymates application is designed as a modern, modular, and scalable web platf
 - **Backend**: Java Spring Boot application, located in `apps/backend`. It exposes REST APIs, handles business logic, authentication, notifications, and integrates with a database.
 - **Monorepo Management**: Uses Nx for workspace management, code sharing, and consistent tooling across frontend and backend.
 - **Database**: Relational database (e.g., PostgreSQL or MySQL) for persistent storage of users, groups, trainings, diets, etc.
-- **Documentation**: Centralized in the `documentation/` folder for business requirements, user stories, and technical docs.
+- **Documentation**: Centralized in the `documentation/` folder for business requirements and technical docs.
 
 ## Frontend Architecture
 

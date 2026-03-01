@@ -1,24 +1,31 @@
 package io.github.gymates.auth;
 
-import io.github.gymates.auth.email.*;
-import io.github.gymates.auth.login.LoginUserCommand;
-import io.github.gymates.auth.login.LoginUserUseCase;
-import io.github.gymates.auth.login.TokenData;
-import io.github.gymates.auth.register.RegisterUserCommand;
-import io.github.gymates.auth.register.RegisterUserUseCase;
-import io.github.gymates.user.model.User;
-import io.github.gymates.auth.email.EmailService;
-import io.github.gymates.auth.login.TokenService;
-import io.github.gymates.user.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.Random;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.Random;
+import io.github.gymates.auth.email.EmailService;
+import io.github.gymates.auth.email.ResendVerificationCodeCommand;
+import io.github.gymates.auth.email.ResendVerificationCodeUseCase;
+import io.github.gymates.auth.email.SendVerificationCodeCommand;
+import io.github.gymates.auth.email.SendVerificationCodeUseCase;
+import io.github.gymates.auth.email.VerifyUserCommand;
+import io.github.gymates.auth.email.VerifyUserUseCase;
+import io.github.gymates.auth.login.LoginUserCommand;
+import io.github.gymates.auth.login.LoginUserUseCase;
+import io.github.gymates.auth.login.TokenData;
+import io.github.gymates.auth.login.TokenService;
+import io.github.gymates.auth.register.RegisterUserCommand;
+import io.github.gymates.auth.register.RegisterUserUseCase;
+import io.github.gymates.user.model.User;
+import io.github.gymates.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
@@ -54,6 +61,7 @@ public class AuthService implements RegisterUserUseCase,
   }
 
   @Override
+  @Transactional
   public User registerUser(RegisterUserCommand command) {
     User user = User.builder()
       .email(command.email())
@@ -64,9 +72,10 @@ public class AuthService implements RegisterUserUseCase,
       .isEnabled(false)
       .build();
 
-    sendVerificationCode(new SendVerificationCodeCommand(user));
+    User savedUser = userRepository.save(user);
+    sendVerificationCode(new SendVerificationCodeCommand(savedUser));
 
-    return userRepository.save(user);
+    return savedUser;
   }
 
   @Override
@@ -80,9 +89,9 @@ public class AuthService implements RegisterUserUseCase,
       }
       user.setVerificationCode(generateVerificationCode());
       user.setExpirationDate(LocalDateTime.now().plusHours(1));
-      sendVerificationCode(new SendVerificationCodeCommand(user));
 
       userRepository.save(user);
+      sendVerificationCode(new SendVerificationCodeCommand(user));
     } else {
       throw new RuntimeException("User not found");
     }
@@ -105,11 +114,7 @@ public class AuthService implements RegisterUserUseCase,
       + "</body>"
       + "</html>";
 
-    try {
-      emailService.sendEmail(command.user().getEmail(), subject, htmlMessage);
-    } catch (Exception e) {
-      // test
-    }
+    emailService.sendEmail(command.user().getEmail(), subject, htmlMessage);
   }
 
   @Override

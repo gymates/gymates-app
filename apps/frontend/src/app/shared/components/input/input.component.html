@@ -1,0 +1,32 @@
+<mat-form-field [appearance]="appearance()" subscriptSizing="fixed">
+  <mat-label>{{ label() }}</mat-label>
+
+  @if (formControl(); as fc) {
+    <input
+      matInput
+      [formControl]="$any(fc)"
+      [id]="id()"
+      [type]="type()"
+      [placeholder]="placeholder()"
+      [readonly]="readonly()"
+      [autocomplete]="autocomplete()"
+    />
+  } @else {
+    <input
+      matInput
+      [id]="id()"
+      [type]="type()"
+      [placeholder]="placeholder()"
+      [disabled]="disabled()"
+      [readonly]="readonly()"
+      [required]="required()"
+      [autocomplete]="autocomplete()"
+      [value]="value()"
+      (input)="onInput($event)"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+    />
+  }
+
+  <mat-error>{{ getFirstError() }}</mat-error>
+</mat-form-field>

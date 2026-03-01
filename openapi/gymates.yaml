@@ -7,11 +7,17 @@ servers:
 paths:
   /api/auth/register:
     $ref: './paths/auth/register.yaml'
+  /api/auth/login:
+    $ref: './paths/auth/login.yaml'
 components:
   schemas:
     RegisterRequest:
       $ref: './components/schemas/auth/RegisterRequest.yaml'
     RegisterResponse:
       $ref: './components/schemas/auth/RegisterResponse.yaml'
+    LoginRequest:
+      $ref: './components/schemas/auth/LoginRequest.yaml'
+    LoginResponse:
+      $ref: './components/schemas/auth/LoginResponse.yaml'
     ErrorResponse:
       $ref: './components/schemas/common/ErrorResponse.yaml'

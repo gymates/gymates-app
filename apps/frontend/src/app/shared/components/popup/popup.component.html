@@ -1,0 +1,24 @@
+<div
+  class="popup"
+  [class]="'popup--' + type()"
+  role="alert"
+  aria-live="polite"
+  (mouseenter)="onMouseEnter()"
+  (mouseleave)="onMouseLeave()"
+>
+  <div class="popup__body">
+    <mat-icon class="popup__icon">{{ iconMap[type()] }}</mat-icon>
+
+    <span class="popup__message">{{ message() }}</span>
+
+    @if (closable()) {
+      <button mat-icon-button type="button" class="popup__close" aria-label="Close notification" (click)="close()">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+  </div>
+
+  <div class="popup__progress-track" aria-hidden="true">
+    <div class="popup__progress-bar" [style.width.%]="progress()"></div>
+  </div>
+</div>

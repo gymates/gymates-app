@@ -1,25 +1,34 @@
 package io.github.gymates.adapter.in.web.auth;
 
-import io.github.gymates.adapter.in.web.auth.dto.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import io.github.gymates.adapter.in.web.auth.dto.LoginRequest;
+import io.github.gymates.adapter.in.web.auth.dto.LoginResponse;
+import io.github.gymates.adapter.in.web.auth.dto.RegisterRequest;
+import io.github.gymates.adapter.in.web.auth.dto.RegisterResponse;
+import io.github.gymates.adapter.in.web.auth.dto.VerifyUserRequest;
+import io.github.gymates.adapter.in.web.auth.mappers.AuthResponseMapper;
 import io.github.gymates.adapter.out.jwt.JwtService;
 import io.github.gymates.auth.email.ResendVerificationCodeCommand;
 import io.github.gymates.auth.email.ResendVerificationCodeUseCase;
 import io.github.gymates.auth.email.VerifyUserCommand;
 import io.github.gymates.auth.email.VerifyUserUseCase;
-import io.github.gymates.user.model.User;
-import io.github.gymates.auth.login.TokenData;
 import io.github.gymates.auth.login.LoginUserCommand;
 import io.github.gymates.auth.login.LoginUserUseCase;
+import io.github.gymates.auth.login.TokenData;
 import io.github.gymates.auth.register.RegisterUserCommand;
 import io.github.gymates.auth.register.RegisterUserUseCase;
-import io.github.gymates.adapter.in.web.auth.mappers.AuthResponseMapper;
+import io.github.gymates.user.model.User;
 import io.github.gymates.user.model.VerificationUser;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
   private final JwtService jwtService;

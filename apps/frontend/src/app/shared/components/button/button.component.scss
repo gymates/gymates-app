@@ -1,0 +1,15 @@
+app-button {
+  display: inline-block;
+
+  button {
+    &.btn-loading {
+      cursor: wait;
+    }
+
+    .btn-content {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+  }
+}
