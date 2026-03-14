@@ -1,13 +1,14 @@
 package io.github.gymates.security;
 
-import io.github.gymates.user.model.User;
-import lombok.AllArgsConstructor;
+import java.util.Collection;
+import java.util.List;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.List;
+import io.github.gymates.user.model.User;
+import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class DomainUserDetails implements UserDetails {
@@ -24,9 +25,14 @@ public class DomainUserDetails implements UserDetails {
     return user.getPassword();
   }
 
+  /**
+   * Returns the email address as the principal identifier.
+   * Email is used consistently across the authentication flow:
+   * UserDetailsService (findByEmail), authenticationManager, JWT subject, and JWT filter.
+   */
   @Override
   public String getUsername() {
-    return user.getUsername();
+    return user.getEmail();
   }
 
   @Override

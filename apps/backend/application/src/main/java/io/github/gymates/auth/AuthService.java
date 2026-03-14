@@ -6,6 +6,7 @@ import java.util.Random;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import io.github.gymates.auth.email.EmailService;
@@ -40,6 +41,8 @@ public class AuthService implements RegisterUserUseCase,
   private final EmailService emailService;
   private final AuthenticationManager authenticationManager;
   private final TokenService tokenService;
+  private final PasswordEncoder passwordEncoder;
+
 
   @Override
   public TokenData loginUser(LoginUserCommand command) {
@@ -47,7 +50,7 @@ public class AuthService implements RegisterUserUseCase,
       .orElseThrow(() -> new RuntimeException("User not found"));
 
     if (!user.isEnabled()) {
-      throw new RuntimeException("Account not verified. Please verify your");
+      throw new RuntimeException("Account not verified. Please verify your email.");
     }
 
     authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(command.email(), command.password()));
@@ -68,7 +71,7 @@ public class AuthService implements RegisterUserUseCase,
       .firstName(command.firstName())
       .lastName(command.lastName())
       .username(command.username())
-      .password(command.password())
+      .password(passwordEncoder.encode(command.password()))
       .verificationCode(generateVerificationCode())
       .expirationDate(LocalDateTime.now().plusMinutes(15))
       .isEnabled(false)

@@ -10,10 +10,7 @@ import io.github.gymates.user.model.User;
 @Component
 public class AuthResponseMapper {
   public RegisterResponse toRegisterResponse(User user) {
-    return RegisterResponse.builder()
-      .username(user.getUsername())
-      .email(user.getEmail())
-      .build();
+    return new RegisterResponse(user.getEmail(), !user.isEnabled());
   }
 
   public LoginResponse toLoginResponse(TokenData tokenData) {

@@ -21,6 +21,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/auth/login': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Login account */
+    post: operations['loginUser'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -28,17 +45,24 @@ export interface components {
     RegisterRequest: {
       /** Format: email */
       email: string;
+      username?: string;
+      firstName?: string;
+      lastName?: string;
       password: string;
-      username: string;
-      firstName: string;
-      lastName: string;
     };
     RegisterResponse: {
-      /** Format: uuid */
-      userId: string;
       /** Format: email */
       email: string;
       requiresEmailVerification: boolean;
+    };
+    LoginRequest: {
+      /** Format: email */
+      email: string;
+      password: string;
+    };
+    LoginResponse: {
+      token: string;
+      expiresIn: number;
     };
     ErrorResponse: {
       message: string;
@@ -84,8 +108,32 @@ export interface operations {
           'application/json': components['schemas']['ErrorResponse'];
         };
       };
-      /** @description Email already exists */
-      409: {
+    };
+  };
+  loginUser: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['LoginRequest'];
+      };
+    };
+    responses: {
+      /** @description Logged in */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['LoginResponse'];
+        };
+      };
+      /** @description Validation error */
+      400: {
         headers: {
           [name: string]: unknown;
         };

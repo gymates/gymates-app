@@ -1,6 +1,9 @@
 <div
   class="popup"
-  [class]="'popup--' + type()"
+  [class.popup--success]="type() === 'success'"
+  [class.popup--error]="type() === 'error'"
+  [class.popup--info]="type() === 'info'"
+  [class.popup--warning]="type() === 'warning'"
   role="alert"
   aria-live="polite"
   (mouseenter)="onMouseEnter()"

@@ -1,11 +1,7 @@
 type: object
-required: [userId, email, requiresEmailVerification]
+required: [token, expiresIn]
 properties:
-  userId:
+  token:
     type: string
-    format: uuid
-  email:
-    type: string
-    format: email
-  requiresEmailVerification:
-    type: boolean
+  expiresIn:
+    type: number
