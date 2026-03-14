@@ -26,7 +26,7 @@
       flex-direction: column;
       gap: 8px;
 
-      .username__inputs {
+      .register-page__user-inputs {
         display: flex;
         gap: 16px;
 
@@ -45,7 +45,7 @@
       width: 100%;
     }
 
-    .hint {
+    .register-page__login-link {
       display: flex;
       justify-content: center;
       gap: 4px;
@@ -70,5 +70,6 @@
 
   app-button {
     width: 100%;
+    margin: 8px;
   }
 }

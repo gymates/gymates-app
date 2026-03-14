@@ -13,7 +13,6 @@ import io.github.gymates.adapter.in.web.auth.dto.RegisterRequest;
 import io.github.gymates.adapter.in.web.auth.dto.RegisterResponse;
 import io.github.gymates.adapter.in.web.auth.dto.VerifyUserRequest;
 import io.github.gymates.adapter.in.web.auth.mappers.AuthResponseMapper;
-import io.github.gymates.adapter.out.jwt.JwtService;
 import io.github.gymates.auth.email.ResendVerificationCodeCommand;
 import io.github.gymates.auth.email.ResendVerificationCodeUseCase;
 import io.github.gymates.auth.email.VerifyUserCommand;
@@ -31,7 +30,6 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
-  private final JwtService jwtService;
   private final RegisterUserUseCase registerUserUseCase;
   private final LoginUserUseCase loginUserUseCase;
   private final VerifyUserUseCase verifyUserUseCase;
@@ -40,11 +38,11 @@ public class AuthenticationController {
 
   @PostMapping("/register")
   public ResponseEntity<RegisterResponse> register(@RequestBody RegisterRequest request) {
-    RegisterUserCommand command = new RegisterUserCommand(request.getUsername(), request.getEmail(), request.getPassword());
+    RegisterUserCommand command = new RegisterUserCommand(request.getUsername(), request.getFirstName(), request.getLastName(), request.getEmail(), request.getPassword());
 
     User registeredUser = registerUserUseCase.registerUser(command);
 
-    return ResponseEntity.ok(authResponseMapper.toRegisterResponse(registeredUser));
+    return ResponseEntity.status(201).body(authResponseMapper.toRegisterResponse(registeredUser));
   }
 
   @PostMapping("/login")
@@ -60,8 +58,8 @@ public class AuthenticationController {
   public ResponseEntity<?> verifyUser(@RequestBody VerifyUserRequest request) {
     try {
       VerifyUserCommand command = new VerifyUserCommand(VerificationUser.builder()
-              .email(request.getEmail())
-              .verificationCode(request.getVerificationCode())
+              .email(request.email())
+              .verificationCode(request.verificationCode())
               .build());
       verifyUserUseCase.verifyUser(command);
       return ResponseEntity.ok("Account verified successfully.");

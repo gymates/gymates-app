@@ -65,6 +65,8 @@ public class AuthService implements RegisterUserUseCase,
   public User registerUser(RegisterUserCommand command) {
     User user = User.builder()
       .email(command.email())
+      .firstName(command.firstName())
+      .lastName(command.lastName())
       .username(command.username())
       .password(command.password())
       .verificationCode(generateVerificationCode())

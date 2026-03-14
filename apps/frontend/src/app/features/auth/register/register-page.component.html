@@ -2,11 +2,13 @@
   <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
     <mat-card-header>
       <mat-card-title><span i18n="@@register.header">Create Account</span></mat-card-title>
-      <mat-card-subtitle>Join FitGroup and start your fitness journey</mat-card-subtitle>
+      <mat-card-subtitle
+        ><span i18n="@@register.subtitle">Join FitGroup and start your fitness journey</span></mat-card-subtitle
+      >
     </mat-card-header>
 
     <mat-card-content>
-      <div class="username__inputs">
+      <div class="register-page__user-inputs">
         <app-input
           label="First Name"
           i18n-label="@@register.firstName.label"
@@ -74,7 +76,7 @@
       </app-button>
     </mat-card-actions>
     <mat-card-footer>
-      <p class="hint">
+      <p class="register-page__login-link">
         <span i18n="@@register.already">Already have an account?</span>
         <a routerLink="/login" i18n="@@register.login">Log in</a>
       </p>

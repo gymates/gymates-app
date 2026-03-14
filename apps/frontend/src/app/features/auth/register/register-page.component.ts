@@ -15,7 +15,7 @@ import { startWith } from 'rxjs';
 import { AuthService } from '../../../services/auth.service';
 import type { components } from '../../../shared/api-types';
 import { ButtonComponent } from '../../../shared/components/button';
-import { InputComponent } from '../../../shared/components/input';
+import { InputComponent } from '../../../shared/components/input/input.component';
 import { PopupService } from '../../../shared/components/popup';
 import { RegisterSuccessDialogComponent } from './register-success-dialog.component';
 
@@ -95,7 +95,7 @@ export class RegisterComponent {
     return {
       firstName: value.firstName,
       lastName: value.lastName,
-      username: value.email,
+      username: value.username,
       email: value.email,
       password: value.password,
     };

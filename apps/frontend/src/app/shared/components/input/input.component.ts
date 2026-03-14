@@ -1,300 +1,212 @@
-import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  effect,
+  DestroyRef,
   forwardRef,
+  inject,
   Injector,
   input,
-  model,
-  Provider,
+  OnInit,
   signal,
 } from '@angular/core';
-import { AbstractControl, FormsModule, NG_VALUE_ACCESSOR, NgControl, ReactiveFormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl, ValidationErrors } from '@angular/forms';
+import { MatFormFieldAppearance } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { startWith } from 'rxjs';
 
-export interface InputFieldState {
-  value: string;
-  touched: boolean;
-  dirty: boolean;
-  valid: boolean;
-  errors: string[];
-}
-
-export interface InputValidators {
-  required?: boolean;
-  minLength?: number;
-  maxLength?: number;
-  pattern?: RegExp;
-  email?: boolean;
-  custom?: (value: string) => string | null;
-}
-
-// Provider for ControlValueAccessor
-export const INPUT_VALUE_ACCESSOR: Provider = {
-  provide: NG_VALUE_ACCESSOR,
-  useExisting: forwardRef(() => InputComponent),
-  multi: true,
+/** Default human-readable messages for built-in Angular validators. */
+const DEFAULT_ERROR_MESSAGES: Record<string, (err: unknown) => string> = {
+  required: () => 'This field is required.',
+  email: () => 'Enter a valid email address.',
+  minlength: (err: unknown) => {
+    const e = err as { requiredLength: number };
+    return `Minimum length is ${e.requiredLength} characters.`;
+  },
+  maxlength: (err: unknown) => {
+    const e = err as { requiredLength: number };
+    return `Maximum length is ${e.requiredLength} characters.`;
+  },
+  min: (err: unknown) => {
+    const e = err as { min: number };
+    return `Minimum value is ${e.min}.`;
+  },
+  max: (err: unknown) => {
+    const e = err as { max: number };
+    return `Maximum value is ${e.max}.`;
+  },
+  pattern: () => 'Invalid format.',
 };
 
+/**
+ * Reusable input wrapper that integrates with Angular Reactive Forms.
+ *
+ * All validators are defined at the **parent** component level — this
+ * component only reacts to the resulting state and renders error messages.
+ * Supply custom messages via the `errorMessages` input, keyed by validator name.
+ *
+ * @example
+ * <app-input
+ *   label="Email"
+ *   type="email"
+ *   [formControl]="form.controls.email"
+ *   [errorMessages]="{ required: 'Email is required.', email: 'Invalid email.' }"
+ * />
+ */
 @Component({
   selector: 'app-input',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule],
+  imports: [MatIconModule],
   templateUrl: './input.component.html',
-  styleUrls: ['./input.component.scss'],
+  styleUrl: './input.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [INPUT_VALUE_ACCESSOR],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => InputComponent),
+      multi: true,
+    },
+  ],
 })
-export class InputComponent {
-  // Input properties
+export class InputComponent implements ControlValueAccessor, OnInit {
+  private readonly destroyRef = inject(DestroyRef);
+
+  // ── Inputs ─────────────────────────────────────────────────────────
   readonly label = input<string>('');
+  readonly type = input<string>('text');
   readonly placeholder = input<string>('');
-  readonly type = input<'text' | 'email' | 'password' | 'number' | 'tel' | 'url'>('text');
-  readonly appearance = input<'fill' | 'outline'>('outline');
-  readonly disabled = model<boolean>(false);
-  readonly readonly = model<boolean>(false);
-  readonly required = model<boolean>(false);
   readonly autocomplete = input<string>('off');
-  readonly id = input<string>(`input-${Math.random().toString(36).substr(2, 9)}`);
+  /** Kept for API compatibility; currently drives no visual variant. */
+  readonly appearance = input<MatFormFieldAppearance>('outline');
 
-  // Validators
-  readonly validators = input<InputValidators>({});
+  /**
+   * Override or extend default error messages.
+   * Keys are validator names (e.g. `'required'`, `'minlength'`, `'email'`).
+   */
+  readonly errorMessages = input<Record<string, string>>({});
 
-  // Reactive Forms support
-  readonly formControl = input<AbstractControl | null>(null);
-  private ngControl: NgControl | null = null;
+  // ── Unique element ID (for label ↔ input association) ──────────────
+  private static _idCounter = 0;
+  readonly inputId = `app-input-${++InputComponent._idCounter}`;
 
-  // Model for two-way binding
-  readonly value = model<string>('');
+  // ── Internal signals ────────────────────────────────────────────────
+  readonly _value = signal<string>('');
+  readonly _disabled = signal<boolean>(false);
+  readonly _showPassword = signal<boolean>(false);
 
-  // Internal signals for state management
-  private touchedSignal = signal<boolean>(false);
-  private dirtySignal = signal<boolean>(false);
-  private errorsSignal = signal<string[]>([]);
+  /**
+   * Writable signal kept in sync with the parent FormControl's validity status.
+   * Updated both via subscription (statusChanges) and imperatively on blur.
+   */
+  private readonly _controlStatus = signal<string>('VALID');
 
-  // ControlValueAccessor callbacks
-  private onChange: (value: string) => void = () => {
-    // Default implementation - will be overridden by registerOnChange
-  };
-  private onTouched: () => void = () => {
-    // Default implementation - will be overridden by registerOnTouched
-  };
+  /**
+   * Monotonically-increasing tick incremented on every blur.
+   * Forces `hasError` computed to re-run even when status hasn't changed,
+   * so the `touched` flag (set by `_onTouched`) is picked up immediately.
+   */
+  private readonly _touchedTick = signal<number>(0);
 
-  // Public getters for template access
-  readonly touched = this.touchedSignal.asReadonly();
-  readonly dirty = this.dirtySignal.asReadonly();
-  readonly isValid = computed(() => {
-    const fc = this.formControl();
-    if (fc) {
-      return fc.valid && !fc.pending;
-    }
-    return this.errorsSignal().length === 0;
-  });
-  readonly state = computed<InputFieldState>(() => {
-    const fc = this.formControl();
-    if (fc) {
-      return {
-        value: fc.value || '',
-        touched: fc.touched,
-        dirty: fc.dirty,
-        valid: fc.valid && !fc.pending,
-        errors: this.getFormControlErrors(fc),
-      };
-    }
-    return {
-      value: this.value(),
-      touched: this.touchedSignal(),
-      dirty: this.dirtySignal(),
-      valid: this.isValid(),
-      errors: this.errorsSignal(),
-    };
+  // ── Computed ────────────────────────────────────────────────────────
+
+  /** Flips between 'password' ↔ 'text' when the visibility toggle is active. */
+  readonly resolvedType = computed(() => (this.type() === 'password' && this._showPassword() ? 'text' : this.type()));
+
+  readonly isPasswordField = computed(() => this.type() === 'password');
+
+  readonly hasError = computed(() => {
+    // Subscribe to both status and touched tick so this recomputes on either change.
+    const status = this._controlStatus();
+    this._touchedTick();
+    return status === 'INVALID' && (this._ngControl?.control?.touched ?? false);
   });
 
-  constructor(private injector: Injector) {
-    // Validate on value change for template-driven mode
-    effect(() => {
-      const fc = this.formControl();
-      if (!fc) {
-        this.validate(this.value());
-      }
+  readonly errorMessage = computed((): string | null => {
+    if (!this.hasError()) return null;
+    const errors: ValidationErrors | null = this._ngControl?.control?.errors ?? null;
+    if (!errors) return null;
+
+    const firstKey = Object.keys(errors)[0];
+    const custom = this.errorMessages();
+    if (custom[firstKey]) return custom[firstKey];
+
+    const defaultFn = DEFAULT_ERROR_MESSAGES[firstKey];
+    return defaultFn ? defaultFn(errors[firstKey]) : `Invalid: ${firstKey}`;
+  });
+
+  // ── ControlValueAccessor ─────────────────────────────────────────────
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  private _onChange: (value: string) => void = () => {};
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  private _onTouched: () => void = () => {};
+
+  /**
+   * Reference to the parent NgControl (FormControlDirective / FormControlName).
+   * We inject Injector here to fetch NgControl dynamically in ngOnInit,
+   * avoiding the NG0200 circular dependency cycle.
+   */
+  private readonly injector = inject(Injector);
+  private _ngControl: NgControl | null = null;
+
+  ngOnInit(): void {
+    // Dynamically inject NgControl to break the circular dependency between
+    // NG_VALUE_ACCESSOR and NgControl.
+    // We use the signature that accepts InjectOptions (cast to unknown to bypass strict rules).
+    this._ngControl = this.injector.get(NgControl, null, { optional: true, self: true } as unknown as {
+      optional: true;
     });
+
+    const control = this._ngControl?.control;
+    if (!control) return;
+
+    // Mirror the FormControl's status observable into our writable signal so
+    // computed() signals stay reactive without needing the toSignal() cast.
+    control.statusChanges
+      .pipe(startWith(control.status), takeUntilDestroyed(this.destroyRef))
+      .subscribe((status) => this._controlStatus.set(status as string));
   }
 
-  private validate(value: string): void {
-    const errors: string[] = [];
-    const validators = this.validators();
-
-    // Required validation
-    if (validators.required && !value.trim()) {
-      errors.push('This field is required');
-    }
-
-    // Skip other validations if field is empty and not required
-    if (!value.trim() && !validators.required) {
-      this.errorsSignal.set(errors);
-      return;
-    }
-
-    // Min length validation
-    if (validators.minLength && value.length < validators.minLength) {
-      errors.push(`Minimum length is ${validators.minLength} characters`);
-    }
-
-    // Max length validation
-    if (validators.maxLength && value.length > validators.maxLength) {
-      errors.push(`Maximum length is ${validators.maxLength} characters`);
-    }
-
-    // Pattern validation
-    if (validators.pattern && !validators.pattern.test(value)) {
-      errors.push('Invalid format');
-    }
-
-    // Email validation
-    if (validators.email) {
-      const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      if (!emailPattern.test(value)) {
-        errors.push('Invalid email address');
-      }
-    }
-
-    // Custom validation
-    if (validators.custom) {
-      const customError = validators.custom(value);
-      if (customError) {
-        errors.push(customError);
-      }
-    }
-
-    this.errorsSignal.set(errors);
-  }
-
-  // Event handlers
-  onFocus(): void {
-    const fc = this.formControl();
-    if (fc) {
-      fc.markAsTouched();
-      this.onTouched();
-    } else {
-      this.touchedSignal.set(true);
-    }
-  }
-
-  onBlur(): void {
-    const fc = this.formControl();
-    if (fc) {
-      fc.markAsTouched();
-      this.onTouched();
-    } else {
-      this.touchedSignal.set(true);
-    }
-  }
-
-  onInput(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    const newValue = target.value;
-
-    const fc = this.formControl();
-    if (fc) {
-      fc.setValue(newValue);
-      fc.markAsDirty();
-      this.onChange(newValue);
-    } else {
-      this.value.set(newValue);
-      this.dirtySignal.set(true);
-      this.onChange(newValue);
-    }
-  }
-
-  // Public API for programmatic access
-  focus(): void {
-    const inputElement = document.getElementById(this.id());
-    inputElement?.focus();
-  }
-
-  reset(): void {
-    this.value.set('');
-    this.touchedSignal.set(false);
-    this.dirtySignal.set(false);
-    this.errorsSignal.set([]);
-  }
-
-  getErrorMessages(): string[] {
-    const fc = this.formControl();
-    if (fc) {
-      // Only return errors if field is touched
-      if (!fc.touched || fc.pending) return [];
-      return this.getFormControlErrors(fc);
-    }
-    // For template-driven forms
-    if (!this.touchedSignal()) return [];
-    return this.errorsSignal();
-  }
-
-  getFirstError(): string {
-    const errors = this.getErrorMessages();
-    return errors.length > 0 ? errors[0] : '';
-  }
-
-  hasErrors(): boolean {
-    const fc = this.formControl();
-    if (fc) {
-      return fc.invalid && fc.touched && !fc.pending;
-    }
-    return this.errorsSignal().length > 0 && this.touchedSignal();
-  }
-
-  private getFormControlErrors(control: AbstractControl): string[] {
-    const errors: string[] = [];
-    if (!control.errors) return errors;
-
-    const errorKeys = Object.keys(control.errors);
-    for (const key of errorKeys) {
-      switch (key) {
-        case 'required':
-          errors.push('This field is required');
-          break;
-        case 'email':
-          errors.push('Invalid email address');
-          break;
-        case 'mismatch':
-          errors.push('Passwords do not match');
-          break;
-        case 'minlength':
-          errors.push(`Minimum length is ${control.errors[key].requiredLength} characters`);
-          break;
-        case 'maxlength':
-          errors.push(`Maximum length is ${control.errors[key].requiredLength} characters`);
-          break;
-        case 'pattern':
-          errors.push('Invalid format');
-          break;
-        default:
-          errors.push('Invalid input');
-      }
-    }
-    return errors;
-  }
-
-  // ControlValueAccessor implementation
-  writeValue(value: unknown): void {
-    if (value !== undefined && value !== null) {
-      this.value.set(String(value));
-    }
+  // ── ControlValueAccessor interface ──────────────────────────────────
+  writeValue(value: string): void {
+    this._value.set(value ?? '');
   }
 
   registerOnChange(fn: (value: string) => void): void {
-    this.onChange = fn;
+    this._onChange = fn;
   }
 
   registerOnTouched(fn: () => void): void {
-    this.onTouched = fn;
+    this._onTouched = fn;
   }
 
   setDisabledState(isDisabled: boolean): void {
-    this.disabled.set(isDisabled);
+    this._disabled.set(isDisabled);
+  }
+
+  // ── DOM event handlers ───────────────────────────────────────────────
+  handleInput(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this._value.set(value);
+    this._onChange(value);
+  }
+
+  handleBlur(): void {
+    this._onTouched();
+    // Increment the tick to force hasError recomputation now that touched = true.
+    this._touchedTick.update((n) => n + 1);
+  }
+
+  togglePasswordVisibility(inputEl: HTMLInputElement): void {
+    // Save the current DOM value BEFORE Angular changes [type], because some
+    // browsers (Safari, Firefox) clear the input value when type is swapped.
+    const currentValue = inputEl.value;
+    this._showPassword.update((v) => !v);
+    // Restore value + focus after the next microtask (after Angular has
+    // updated [type] in the DOM via change detection).
+    Promise.resolve().then(() => {
+      inputEl.value = currentValue;
+      inputEl.focus();
+    });
   }
 }

@@ -10,6 +10,9 @@
       "executor": "@angular-devkit/build-angular:application",
       "outputs": ["{options.outputPath}"],
       "options": {
+        "define": {
+          "process.env.NX_API_URL": "process.env.NX_API_URL"
+        },
         "outputPath": "dist/apps/frontend",
         "index": "apps/frontend/src/index.html",
         "browser": "apps/frontend/src/main.ts",
@@ -50,7 +53,13 @@
           "optimization": false,
           "extractLicenses": false,
           "sourceMap": true,
-          "prerender": false
+          "prerender": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/frontend/src/environments/environment.ts",
+              "with": "apps/frontend/src/environments/environment.development.ts"
+            }
+          ]
         },
         "pl": {
           "localize": ["pl"]

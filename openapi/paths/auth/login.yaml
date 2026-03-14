@@ -8,7 +8,7 @@ post:
         schema:
           $ref: '../../components/schemas/auth/LoginRequest.yaml'
   responses:
-    '201':
+    '200':
       description: Logged in
       content:
         application/json:
