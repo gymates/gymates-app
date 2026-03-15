@@ -1,11 +1,9 @@
 # Gymates Project Workflow
 
-## 1. Moving user stories to GitHub Issues
+## 1. Creating user stories in GitHub Issues
 
-- Each user story from the `user-stories.md` file should be transferred to GitHub Issues as a separate issue.
 - Issue title: consistent with the user story content.
 - Issue description: details, acceptance criteria, related technical tasks.
-- Any change in a user story (e.g., clarification, splitting into smaller tasks) should be reflected both in the `user-stories.md` file and in the corresponding GitHub issue.
 - **Example issue template:**
 
   ```markdown
@@ -30,7 +28,7 @@
 
 ## 2. Creating tasks (sub-tasks)
 
-- Each user story is divided into smaller technical tasks (sub-tasks), which are also added to GitHub Issues (as checklists or separate issues linked to the main user story).
+- Each user story is divided into smaller technical tasks (sub-tasks), which are added to GitHub Issues (as checklists or separate issues linked to the main user story).
 - Each task should have a clear description, acceptance criteria, and be linked to a user story.
 - **Best practices:**
   - Tasks should be as small and independent as possible.
@@ -78,7 +76,6 @@
 
 ## 5. Documentation update
 
-- Any change in a user story or task should be reflected in the `user-stories.md` file and on GitHub Issues.
 - Technical and business documentation should be kept up to date.
 - **Best practices:**
   - Update diagrams if the architecture changes.

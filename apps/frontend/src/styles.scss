@@ -1,1 +1,33 @@
 /* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+$background-color: #1f1f1f;
+$background-gradient: linear-gradient(
+  90deg,
+  rgba(31, 31, 31, 1) 0%,
+  rgba(40, 46, 59, 1) 50%,
+  rgba(31, 31, 31, 1) 100%,
+  rgba(0, 0, 0, 1) 84%
+);
+
+html {
+  color-scheme: light dark;
+  @include mat.theme(
+    (
+      color: mat.$blue-palette,
+      typography: Inter,
+      density: 0,
+    )
+  );
+}
+
+body {
+  background: $background-color;
+  background: $background-gradient;
+  color: var(--mat-sys-on-surface);
+  margin: 0;
+  height: 100vh;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

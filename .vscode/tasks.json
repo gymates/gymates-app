@@ -2,33 +2,39 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "FE: nx serve frontend",
+      "label": "FE: dev",
       "type": "shell",
       "command": "npm",
-      "args": ["run", "start:fe"],
+      "args": ["run", "dev:fe"],
       "isBackground": true,
       "problemMatcher": []
     },
     {
-      "label": "BE: nx serve backend",
+      "label": "BE: dev",
       "type": "shell",
       "command": "npm",
-      "args": ["run", "serve:be"],
+      "args": ["run", "dev:be"],
       "isBackground": true,
       "problemMatcher": []
     },
     {
-      "label": "BE: nx serve backend (debug 5005)",
+      "label": "BE: dev (debug 5005)",
       "type": "shell",
       "command": "npm",
-      "args": ["run", "debug:be"],
+      "args": ["run", "dev:be:debug"],
       "isBackground": true,
       "problemMatcher": []
     },
     {
-      "label": "FE+BE: start both",
-      "dependsOn": ["FE: nx serve frontend", "BE: nx serve backend"],
+      "label": "FE+BE: dev",
+      "dependsOn": ["FE: dev", "BE: dev"],
       "problemMatcher": []
+    },
+    {
+      "label": "FE+BE: dev (debug)",
+      "dependsOn": ["FE: dev", "BE: dev (debug 5005)"],
+      "problemMatcher": [],
+      "dependsOrder": "parallel"
     },
     {
       "label": "FE: test",
@@ -38,20 +44,60 @@
       "problemMatcher": []
     },
     {
-      "label": "E2E: frontend",
+      "label": "BE: test",
       "type": "shell",
       "command": "npm",
-      "args": ["run", "e2e"],
+      "args": ["run", "test:be"],
       "problemMatcher": []
     },
     {
-      "label": "FE+BE: start both (debug)",
-      "dependsOn": [
-        "FE: nx serve frontend",
-        "BE: nx serve backend (debug 5005)"
-      ],
-      "problemMatcher": [],
-      "dependsOrder": "parallel"
+      "label": "E2E: test",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "test:e2e"],
+      "problemMatcher": []
+    },
+    {
+      "label": "FE: lint",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "lint:fe"],
+      "problemMatcher": []
+    },
+    {
+      "label": "BE: lint",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "lint:be"],
+      "problemMatcher": []
+    },
+    {
+      "label": "FE: format",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "format:fe"],
+      "problemMatcher": []
+    },
+    {
+      "label": "BE: format",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "format:be"],
+      "problemMatcher": []
+    },
+    {
+      "label": "generate: api types",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "generate:api"],
+      "problemMatcher": []
+    },
+    {
+      "label": "i18n: extract",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "i18n:extract"],
+      "problemMatcher": []
     }
   ]
 }

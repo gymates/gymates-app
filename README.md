@@ -63,6 +63,12 @@ Gymates is a social and training app for gym-goers: friends and groups, chat, tr
   npm run format
   ```
 
+### Registration Page
+
+- Route: `/register`
+- Features: reactive form (email, password, confirm password), basic validation, success/error messages.
+- API: submits to `/api/auth/register` (configure backend to handle this endpoint and send activation email).
+
 ## Testing
 
 ### Unit tests (Jest)
@@ -80,6 +86,12 @@ Gymates is a social and training app for gym-goers: friends and groups, chat, tr
   nx test frontend --coverage
   # reports in coverage/apps/frontend
   ```
+
+Run only the registration component tests:
+
+```sh
+nx test frontend --test-file="register.component.spec.ts"
+```
 
 ### E2E tests (Playwright)
 
@@ -105,6 +117,25 @@ Run tests only for projects affected by the current branch:
 ```sh
 npx nx affected -t test
 ```
+
+## API Contract (OpenAPI)
+
+Kontrakt między frontendem a backendem definiujemy w `openapi/gymates.yaml`.
+
+- Generowanie typów do frontendu (TypeScript):
+
+  ```sh
+  npm i -D openapi-typescript
+  npm run generate:api:types
+  ```
+
+  Wynik: `apps/frontend/src/app/shared/api-types.ts`
+
+- Generowanie DTO do backendu (Java):
+  ```sh
+  nx run backend:build # lub mvn generate-sources
+  ```
+  Wygenerowane klasy znajdują się w `apps/backend/target/generated-sources/openapi` i są dodawane do źródeł podczas builda.
 
 ## Code Quality
 

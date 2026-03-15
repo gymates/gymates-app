@@ -1,0 +1,85 @@
+<mat-card>
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <mat-card-header>
+      <mat-card-title><span i18n="@@register.header">Create Account</span></mat-card-title>
+      <mat-card-subtitle
+        ><span i18n="@@register.subtitle">Join FitGroup and start your fitness journey</span></mat-card-subtitle
+      >
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="register-page__user-inputs">
+        <app-input
+          label="First Name"
+          i18n-label="@@register.firstName.label"
+          type="text"
+          [formControl]="form.controls.firstName"
+          autocomplete="given-name"
+          appearance="outline"
+        />
+
+        <app-input
+          label="Last Name"
+          i18n-label="@@register.lastName.label"
+          type="text"
+          [formControl]="form.controls.lastName"
+          autocomplete="family-name"
+          appearance="outline"
+        />
+      </div>
+
+      <app-input
+        label="Username"
+        i18n-label="@@register.username.label"
+        type="text"
+        [formControl]="form.controls.username"
+        autocomplete="username"
+        appearance="outline"
+      />
+
+      <app-input
+        label="Email"
+        i18n-label="@@register.email.label"
+        type="email"
+        [formControl]="form.controls.email"
+        autocomplete="email"
+        appearance="outline"
+      />
+
+      <app-input
+        label="Password"
+        i18n-label="@@register.password.label"
+        type="password"
+        [formControl]="form.controls.password"
+        autocomplete="new-password"
+        appearance="outline"
+      />
+
+      <app-input
+        label="Confirm Password"
+        i18n-label="@@register.confirmPassword.label"
+        type="password"
+        [formControl]="form.controls.confirmPassword"
+        autocomplete="new-password"
+        appearance="outline"
+      />
+    </mat-card-content>
+    <mat-card-actions>
+      <app-button
+        type="submit"
+        variant="primary"
+        [disabled]="!canSubmit()"
+        [loading]="isLoading()"
+        i18n="@@register.submit"
+      >
+        Create Account
+      </app-button>
+    </mat-card-actions>
+    <mat-card-footer>
+      <p class="register-page__login-link">
+        <span i18n="@@register.already">Already have an account?</span>
+        <a routerLink="/login" i18n="@@register.login">Log in</a>
+      </p>
+    </mat-card-footer>
+  </form>
+</mat-card>

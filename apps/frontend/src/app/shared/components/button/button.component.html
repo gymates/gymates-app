@@ -1,0 +1,106 @@
+@switch (materialStyle()) {
+  @case ('raised') {
+    <button
+      #buttonElement
+      mat-raised-button
+      [type]="type()"
+      [color]="variant()"
+      [disabled]="isDisabled()"
+      [attr.aria-label]="ariaLabel() || label()"
+      [attr.aria-disabled]="isDisabled()"
+      [attr.aria-busy]="loading()"
+      [class]="buttonClasses().join(' ')"
+      (click)="onClick($event)"
+    >
+      <ng-container *ngTemplateOutlet="buttonContent" />
+    </button>
+  }
+  @case ('stroked') {
+    <button
+      #buttonElement
+      mat-stroked-button
+      [type]="type()"
+      [color]="variant()"
+      [disabled]="isDisabled()"
+      [attr.aria-label]="ariaLabel() || label()"
+      [attr.aria-disabled]="isDisabled()"
+      [attr.aria-busy]="loading()"
+      [class]="buttonClasses().join(' ')"
+      (click)="onClick($event)"
+    >
+      <ng-container *ngTemplateOutlet="buttonContent" />
+    </button>
+  }
+  @case ('outlined') {
+    <button
+      #buttonElement
+      mat-stroked-button
+      [type]="type()"
+      [color]="variant()"
+      [disabled]="isDisabled()"
+      [attr.aria-label]="ariaLabel() || label()"
+      [attr.aria-disabled]="isDisabled()"
+      [attr.aria-busy]="loading()"
+      [class]="buttonClasses().join(' ')"
+      (click)="onClick($event)"
+    >
+      <ng-container *ngTemplateOutlet="buttonContent" />
+    </button>
+  }
+  @case ('basic') {
+    <button
+      #buttonElement
+      mat-button
+      [type]="type()"
+      [color]="variant()"
+      [disabled]="isDisabled()"
+      [attr.aria-label]="ariaLabel() || label()"
+      [attr.aria-disabled]="isDisabled()"
+      [attr.aria-busy]="loading()"
+      [class]="buttonClasses().join(' ')"
+      (click)="onClick($event)"
+    >
+      <ng-container *ngTemplateOutlet="buttonContent" />
+    </button>
+  }
+  @default {
+    <button
+      #buttonElement
+      mat-flat-button
+      [type]="type()"
+      [color]="variant()"
+      [disabled]="isDisabled()"
+      [attr.aria-label]="ariaLabel() || label()"
+      [attr.aria-disabled]="isDisabled()"
+      [attr.aria-busy]="loading()"
+      [class]="buttonClasses().join(' ')"
+      (click)="onClick($event)"
+    >
+      <ng-container *ngTemplateOutlet="buttonContent" />
+    </button>
+  }
+}
+
+<ng-template #buttonContent>
+  <span class="btn-wrapper">
+    <span class="btn-content">
+      @if (loading()) {
+        <mat-spinner diameter="20" strokeWidth="2" />
+      } @else {
+        @if (showIcon() && iconPosition() === 'start') {
+          <mat-icon class="btn-icon">{{ icon() }}</mat-icon>
+        }
+
+        @if (label()) {
+          <span class="btn-text">{{ label() }}</span>
+        } @else {
+          <span class="btn-text"><ng-content /></span>
+        }
+
+        @if (showIcon() && iconPosition() === 'end') {
+          <mat-icon class="btn-icon">{{ icon() }}</mat-icon>
+        }
+      }
+    </span>
+  </span>
+</ng-template>

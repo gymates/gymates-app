@@ -1,0 +1,8 @@
+type: object
+required: [email, requiresEmailVerification]
+properties:
+  email:
+    type: string
+    format: email
+  requiresEmailVerification:
+    type: boolean

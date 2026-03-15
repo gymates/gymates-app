@@ -1,0 +1,38 @@
+<div class="input-field" [class.input-field--error]="hasError()" [class.input-field--disabled]="_disabled()">
+  @if (label()) {
+    <label class="input-field__label" [for]="inputId">{{ label() }}</label>
+  }
+
+  <div class="input-field__wrapper">
+    <input
+      #inputEl
+      class="input-field__input"
+      [id]="inputId"
+      [type]="resolvedType()"
+      [value]="_value()"
+      [disabled]="_disabled()"
+      [placeholder]="placeholder()"
+      [attr.autocomplete]="autocomplete()"
+      (input)="handleInput($event)"
+      (blur)="handleBlur()"
+    />
+
+    @if (isPasswordField()) {
+      <button
+        type="button"
+        class="input-field__eye-toggle"
+        (mousedown)="$event.preventDefault()"
+        (click)="togglePasswordVisibility(inputEl)"
+        [attr.aria-label]="_showPassword() ? 'Hide password' : 'Show password'"
+        [attr.aria-pressed]="_showPassword()"
+        tabindex="-1"
+      >
+        <mat-icon>{{ _showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+    }
+  </div>
+
+  @if (hasError() && errorMessage()) {
+    <span class="input-field__error" role="alert">{{ errorMessage() }}</span>
+  }
+</div>

@@ -1,0 +1,75 @@
+:host ::ng-deep {
+  display: grid;
+  height: 100%;
+  place-content: center;
+
+  mat-card {
+    max-width: 420px;
+
+    mat-card-header {
+      .mat-mdc-card-header-text {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 28px;
+      }
+
+      mat-card-title {
+        font-size: 1.5rem;
+        line-height: 2rem;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+      }
+    }
+
+    mat-card-content {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      .register-page__user-inputs {
+        display: flex;
+        gap: 16px;
+
+        & > * {
+          flex: 1;
+          min-width: 0;
+        }
+      }
+    }
+
+    .mat-mdc-form-field {
+      width: 100%;
+    }
+
+    .mat-mdc-unelevated-button {
+      width: 100%;
+    }
+
+    .register-page__login-link {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      padding: 0 16px;
+
+      span {
+        color: var(--mat-sys-on-surface-variant);
+      }
+
+      a {
+        text-decoration: none;
+        color: var(--mat-sys-primary);
+      }
+    }
+  }
+
+  .mat-card-title,
+  .mat-card-subtitle {
+    width: 100%;
+    text-align: center;
+  }
+
+  app-button {
+    width: 100%;
+    margin: 8px;
+  }
+}

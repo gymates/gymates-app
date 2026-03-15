@@ -1,0 +1,22 @@
+post:
+  operationId: registerUser
+  summary: Register account
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../components/schemas/auth/RegisterRequest.yaml'
+  responses:
+    '201':
+      description: Registered
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/auth/RegisterResponse.yaml'
+    '400':
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '../../components/schemas/common/ErrorResponse.yaml'

@@ -1,0 +1,7 @@
+type: object
+required: [token, expiresIn]
+properties:
+  token:
+    type: string
+  expiresIn:
+    type: number

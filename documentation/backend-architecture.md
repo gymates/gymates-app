@@ -1,8 +1,16 @@
 # Backend Architecture Guide
 
-This guide defines how we structure and evolve the Spring Boot backend using pragmatic, complementary principles: Clean Architecture, Onion/Hexagonal Architecture, Domain‑Driven Design (DDD), and CQRS. Treat this as a living document—opt for simplicity first and grow only when the domain demands it (YAGNI, KISS).
+This guide defines how we structure the Spring Boot backend with Clean Architecture and Hexagonal/Onion principles, applying DDD and lightweight CQRS. It aligns with the requested split:
 
-> Security-first: follow the Secure Coding and OWASP rules in `.github/instructions/security-and-owasp.instructions.md`.
+- infrastructure
+  - inbound (web, mobile)
+  - outbound
+- application
+  - <feature> (e.g., auth, group, chat)
+- domain
+  - <feature> (e.g., auth, group, chat)
+
+Treat this as a living document—opt for simplicity first and grow only when the domain demands it (YAGNI, KISS). Security-first: see `.github/instructions/security-and-owasp.instructions.md`.
 
 ## Goals
 
@@ -11,167 +19,123 @@ This guide defines how we structure and evolve the Spring Boot backend using pra
 - Replaceable infrastructure (DB, messaging, external APIs) with ports/adapters
 - Predictable flows (commands/queries) and fast tests at the right layers
 
-## High-level architecture (layers)
+## Layers and dependencies
 
-- API (inbound adapters): HTTP controllers, request/response DTOs, authentication
-- Application: use cases (command/query handlers), transactions, orchestration
-- Domain (center): entities, value objects, domain services, domain events
-- Infrastructure (outbound adapters): persistence (JPA), messaging, external clients, configuration
+- Infrastructure
+  - Inbound adapters: HTTP controllers for web/mobile, mapping requests to application commands/queries
+  - Outbound adapters: implementations for persistence, messaging, external clients, configuration
+- Application: use cases (command/query handlers), transactions, orchestration; depends only on Domain and outbound ports
+- Domain (core): entities, value objects, aggregates, domain services, domain events
 
-Dependencies point inward only:
+Dependency rule: Infrastructure ➜ Application ➜ Domain (pointing inward). Inbound calls go from adapters into application; outbound calls go from application through ports to infrastructure adapters.
 
-API ➜ Application ➜ Domain
-▲ ▲
-└── Infrastructure (adapters implement outbound ports)
-
-## Package structure
+## Suggested base package structure
 
 Base package: `io.github.gymates`
 
-- `api/` – inbound adapters (REST, maybe GraphQL in future)
-  - `rest/<context>`: controllers, request/response DTOs, mappers
-  - `config`: API-specific config, security filters, exception handling
-- `application/` – orchestrates use cases (no framework logic)
-  - `<context>/command|query`: DTOs describing inputs
-  - `<context>/handler`: command/query handlers (transactional, idempotency)
-  - `<context>/port/out`: outbound ports (interfaces) used by application
-  - `<context>/dto`: application-level DTOs (when needed)
-- `domain/` – pure model and business rules
-  - `<context>/model`: entities, value objects, aggregates
-  - `<context>/service`: domain services (stateless)
-  - `<context>/event`: domain events
-  - `<context>/repository`: domain repository abstractions (if you prefer keeping ports here)
-- `infrastructure/` – concrete adapters
-  - `persistence/jpa/<context>`: Spring Data repositories, entities mapping, converters
-  - `messaging/<context>`: Kafka/AMQP producers/consumers
-  - `client/<context>`: HTTP clients (WebClient/RestClient), DTOs, mappers
-  - `config`: infrastructure config, database, migrations (Flyway)
-- `common/` – shared utilities, error types, annotations, pagination, clock abstraction
+- `infrastructure/`
+  - `inbound/web/<feature>`: REST controllers, request/response DTOs, exception mapping for web
+  - `inbound/mobile/<feature>`: controllers for mobile-specific endpoints (if different)
+  - `outbound/persistence/jpa/<feature>`: JPA entities/mappers, Spring Data repositories implementing outbound ports
+  - `outbound/client/<feature>`: HTTP clients, DTOs, mappers
+  - `config`: infrastructure configs (DB, Flyway, security filters, serialization)
+- `application/`
+  - `<feature>/command|query`: request models for use cases
+  - `<feature>/handler`: command/query handlers (transactional boundary)
+  - `<feature>/port/out`: outbound ports (interfaces) the application requires
+  - `<feature>/dto`: application-level DTOs (optional)
+- `domain/`
+  - `<feature>/model`: entities, value objects, aggregates (framework-agnostic)
+  - `<feature>/service`: domain services
+  - `<feature>/event`: domain events
+  - `<feature>/repository`: optional domain repository abstractions (if you keep ports in domain)
 
-> Bound contexts example: `user`, `group`, `chat`, `plan`, `nutrition`. Prefer multiple small modules over one mega-module when the domain grows.
+> Feature examples: `auth`, `user`, `group`, `chat`, `plan`, `nutrition`. Start in a single module; split modules only when needed.
 
 ## DDD building blocks
 
-- Entities: represent identity and lifecycle. Keep behavior with the data.
-- Value Objects: immutable, validated at construction; equality by value.
-- Aggregates: transactional boundaries; expose invariant-preserving methods.
-- Domain Services: stateless operations that don’t fit a single entity.
-- Domain Events: capture important state changes; publish from aggregates/use cases.
-- Repositories: abstractions to load and persist aggregates (as ports).
+- Entities and Value Objects: behavior with data; immutable VOs validated at construction
+- Aggregates: enforce invariants; expose intention-revealing methods
+- Domain Services: stateless business operations beyond a single aggregate
+- Domain Events: capture significant changes; optionally publish to messaging from adapters
+- Repositories/Ports: abstractions to load/persist aggregates (define in application `port/out` or domain `repository`)
 
-### Invariants and validation
+### Validation and invariants
 
-- Validate at boundaries (API) and enforce invariants in the domain.
-- Fail fast with meaningful, non-leaky errors; map to proper HTTP statuses in API.
+- Validate at inbound adapters (Bean Validation) and enforce invariants in domain
+- Fail fast with meaningful errors; map to consistent API error format
 
-## Ports & Adapters (Hexagonal)
+## Ports & Adapters
 
-- Outbound ports are interfaces in `application/.../port/out` (or `domain/.../repository`).
-- Adapters implement these ports in `infrastructure/...` and are wired by Spring.
-- This keeps the core independent of JPA, HTTP clients, etc.
+- Outbound ports are interfaces under `application/<feature>/port/out` (or domain repository abstractions)
+- Adapters in `infrastructure/outbound/...` implement those ports using JPA/HTTP/etc.
+- Inbound adapters in `infrastructure/inbound/...` depend on application only
 
-## CQRS (lightweight)
+## CQRS (pragmatic)
 
-- Separate write (commands) and read (queries) use cases.
-- Command handlers change state; query handlers retrieve data.
-- Read models can be denormalized DTOs; use projections for performance.
-- Use transactions at handler level (`@Transactional` on application layer), not controllers.
+- Separate commands (state change) and queries (reads) at application level
+- Handlers are cohesive, transactional units; return minimal results/IDs
+- Read models can be denormalized DTOs or projections when performance dictates
 
-> Only introduce event sourcing or separate read DBs when necessary.
+## API and DTO contracts
 
-## Contracts and DTOs
-
-- API DTOs belong to `api/.../rest` and are not reused in domain or persistence.
-- Map between layers explicitly (manual or MapStruct). Avoid leaking JPA entities to API.
-- Prefer immutable DTOs (Java records) when using Java 17+.
-
-### API versioning and validation
-
-- Version public APIs (e.g., `/api/v1/...`); avoid breaking changes—introduce new versions when needed.
-- Use Bean Validation on request DTOs (`jakarta.validation.*`), mirror core rules; validate at controller boundaries.
-- Centralize exception-to-response mapping and validation error shaping (consistent format).
-
-## Error handling and logging
-
-- Centralize API exception mapping with `@ControllerAdvice`.
-- Use structured logging (JSON fields, correlation/request IDs). Do not log secrets/PII.
-- Map known exceptions to 4xx; unexpected to 5xx without stack traces in responses.
-
-## Observability
-
-- Propagate correlation IDs across services; prefer W3C Trace Context (`traceparent`, `tracestate`).
-- Metrics and tracing via Micrometer + OpenTelemetry; expose health/readiness/liveness endpoints.
-- Log important domain events and command/query lifecycle at INFO; keep payloads safe (mask PII).
-
-## Security
-
-- Deny by default; explicit authorization checks per use case or resource.
-- Validate inputs; sanitize outputs for any templated rendering.
-- Never hardcode secrets; use environment/secret store. Always HTTPS for outbound calls.
-- See `.github/instructions/security-and-owasp.instructions.md` for details.
-- SSRF: allow-list outbound hosts/ports/paths when URLs come from users; validate and block private address ranges.
-
-## Persistence (JPA) guidance
-
-- Keep JPA annotations in infrastructure entities; map to domain models.
-- Repositories in infrastructure implement outbound ports or domain repository interfaces.
-- Favor optimistic locking (`@Version`).
-- Use parameterized queries; avoid dynamic string concatenation.
-- Migrations with Flyway/Liquibase; no schema drift.
-
-## Performance & reliability
-
-- Paginate list endpoints by default; provide sorting/filtering with safe allow-lists.
-- Avoid N+1 queries: use fetch joins, projections, or explicit load strategies.
-- Use caching where it clearly helps; define invalidation rules.
-- Apply timeouts, retries with jitter, and circuit breakers to outbound calls (HTTP, messaging, DB where applicable).
-- Prefer batch operations where supported; avoid chatty networks.
-
-## Messaging and integrations
-
-- Define outbound ports for external systems; implement clients in infrastructure.
-- Apply timeouts, retries with jitter, and circuit breakers for network calls.
-- Consider idempotency keys for externally-visible commands.
+- Keep API DTOs within inbound web/mobile packages; do not leak JPA entities
+- Map between layers explicitly (manual or MapStruct)
+- Version public APIs (e.g., `/api/v1/...`) and centralize exception handling
 
 ## Testing strategy
 
-- Unit tests (pure): domain model and domain services.
-- Application tests: command/query handlers with fake ports (in-memory test doubles).
-- Spring slice tests:
+- Domain unit tests: pure, fast, deterministic
+- Application tests: handlers with in-memory fakes for ports
+- Spring slices:
   - `@WebMvcTest` for controllers (mock handlers)
-  - `@DataJpaTest` for repositories/adapters
-- Integration tests: thin happy-paths wiring real adapters (testcontainers recommended).
-- Contract tests (where appropriate) between API and consumers or between adapters and external services, to detect breaking changes early.
-
-Keep tests fast and deterministic; one or two critical E2E per bounded context.
-
-## Example flow (Create Group)
-
-1. API receives `POST /groups` with `CreateGroupRequest` (validated)
-2. Controller maps to `CreateGroupCommand`
-3. `CreateGroupHandler` (application) validates business preconditions, creates aggregate, calls `GroupRepository.save` (outbound port)
-4. Infrastructure JPA adapter implements `GroupRepository` and persists entity
-5. Handler returns `GroupId`, controller maps to `201 Created` response
+  - `@DataJpaTest` for persistence adapters
+- Integration tests: happy-path wiring (Testcontainers recommended for DB)
+- Contract tests where appropriate
 
 ## Conventions checklist
 
-- Controllers are thin; no transactions, no business logic
-- Application layer holds transactions and use case orchestration
-- Domain is framework-agnostic, immutable by default, invariants enforced
-- Outbound dependencies go through ports; adapters in infrastructure
-- Separate commands/queries; avoid leaking JPA entities to API
-- Centralized error handling, structured logging, no PII secrets in logs
-- Security-by-default; environment-driven configuration
+- Controllers thin; no transactions
+- Handlers hold transactions; idempotency where applicable
+- Domain framework-agnostic; invariants enforced
+- Outbound dependencies via ports; adapters implement them
+- Commands vs. queries separated; no JPA entities in API
+- Centralized error handling; structured logging without secrets/PII
 
-## When to scale the architecture
+## Example layout (auth)
 
-- Start simple (single module + packages per context)
-- Extract submodules when: build/test time slows, teams split, or coupling grows
-- Introduce CQRS read models or separate stores only for real performance needs
+```
+io/github/gymates/
+  infrastructure/
+    inbound/web/auth/
+      RegisterController.java
+      dto/
+        RegisterRequest.java
+        RegisterResponse.java
+      ApiExceptionHandler.java
+    outbound/persistence/jpa/auth/
+      UserJpaEntity.java
+      UserJpaRepository.java
+      UserRepositoryAdapter.java  // implements application port
+  application/
+    auth/
+      command/RegisterUserCommand.java
+      handler/RegisterUserHandler.java
+      port/out/UserRepositoryPort.java
+  domain/
+    auth/
+      model/User.java
+      event/UserRegistered.java
+      service/PasswordPolicy.java
+  common/
+    error/ErrorCodes.java
+    time/ClockProvider.java
+```
+
+This repository currently holds some files under previous paths. New code should follow the structure above; existing code can be incrementally moved when touched.
 
 ## References
 
 - Clean Architecture – R. C. Martin
 - Implementing Domain-Driven Design – V. Vernon
-- Patterns, Principles, and Practices of DDD – S. Millett, N. Tune
 - Hexagonal Architecture – A. Cockburn

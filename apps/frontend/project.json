@@ -10,10 +10,13 @@
       "executor": "@angular-devkit/build-angular:application",
       "outputs": ["{options.outputPath}"],
       "options": {
+        "define": {
+          "process.env.NX_API_URL": "process.env.NX_API_URL"
+        },
         "outputPath": "dist/apps/frontend",
         "index": "apps/frontend/src/index.html",
         "browser": "apps/frontend/src/main.ts",
-        "polyfills": ["zone.js"],
+        "polyfills": ["zone.js", "@angular/localize/init"],
         "tsConfig": "apps/frontend/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
@@ -27,11 +30,11 @@
         "server": "apps/frontend/src/main.server.ts",
         "ssr": {
           "entry": "apps/frontend/src/server.ts"
-        },
-        "prerender": true
+        }
       },
       "configurations": {
         "production": {
+          "prerender": true,
           "budgets": [
             {
               "type": "initial",
@@ -49,7 +52,17 @@
         "development": {
           "optimization": false,
           "extractLicenses": false,
-          "sourceMap": true
+          "sourceMap": true,
+          "prerender": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/frontend/src/environments/environment.ts",
+              "with": "apps/frontend/src/environments/environment.development.ts"
+            }
+          ]
+        },
+        "pl": {
+          "localize": ["pl"]
         }
       },
       "defaultConfiguration": "production"
@@ -62,6 +75,9 @@
         },
         "development": {
           "buildTarget": "frontend:build:development"
+        },
+        "pl": {
+          "buildTarget": "frontend:build:pl"
         }
       },
       "defaultConfiguration": "development"
@@ -69,7 +85,10 @@
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
-        "buildTarget": "frontend:build"
+        "buildTarget": "frontend:build",
+        "format": "xlf",
+        "outputPath": "apps/frontend/src/locale",
+        "outFile": "messages.xlf"
       }
     },
     "lint": {
