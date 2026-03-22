@@ -5,8 +5,8 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { environment } from '../environments/environment';
 import { appRoutes } from './app.routes';
-import { apiInterceptor } from './shared/interceptors/api.interceptor';
 import { API_URL } from './shared/tokens';
+import { apiInterceptor } from './core/http/api.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [

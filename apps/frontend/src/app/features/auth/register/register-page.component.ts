@@ -22,14 +22,14 @@ import { RegisterSuccessDialogComponent } from './register-success-dialog.compon
 type RegisterRequest = components['schemas']['RegisterRequest'];
 
 @Component({
-  selector: 'app-register',
+  selector: 'app-page-register',
   standalone: true,
   imports: [ReactiveFormsModule, RouterLink, MatCardModule, InputComponent, ButtonComponent],
   templateUrl: './register-page.component.html',
   styleUrl: './register-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RegisterComponent {
+export class RegisterPageComponent {
   private fb = inject(NonNullableFormBuilder);
   private auth = inject(AuthService);
   private dialog = inject(MatDialog);
